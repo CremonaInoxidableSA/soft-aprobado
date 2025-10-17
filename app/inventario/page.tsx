@@ -26,6 +26,10 @@ export default function InventoryPage() {
   );
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
 
+  // Paginación
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
+
   // Cargar datos iniciales
   useEffect(() => {
     loadFilters();
@@ -121,19 +125,27 @@ export default function InventoryPage() {
       })
     : [];
 
+  // Paginación
+  const totalPages = Math.ceil(sortedData.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const paginatedData = sortedData.slice(startIndex, endIndex);
+
+  // Resetear página cuando cambian los filtros
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [search, locationFilter, softwareFilter]);
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-600 to-indigo-700 p-5">
+    <div className="min-h-screen bg-gradient-to-br from-purple-600 to-indigo-700 p-5">
       <div className="max-w-7xl mx-auto">
-        <div className="bg-white rounded-xl shadow-2xl overflow-hidden my-5">
+        <div className="bg-white rounded-sm shadow-2xl overflow-hidden my-5">
           {/* Header */}
           <header className="text-center p-8 border-b-2 border-gray-100">
             <h1 className="text-4xl font-light text-gray-800 mb-3">
               <i className="fas fa-desktop text-blue-500 mr-4"></i>
               GLPI Software Inventory
             </h1>
-            <p className="text-gray-600 text-lg mb-4">
-              Consulta de software instalado por computadora
-            </p>
             <div className="flex gap-4 justify-center">
               <Link
                 href="/aprobado"
@@ -147,7 +159,7 @@ export default function InventoryPage() {
           {/* Controls */}
           <div className="bg-gray-50 p-6">
             {/* Search */}
-            <div className="mb-6">
+            <div className="mb-6 text-black">
               <SearchBox
                 value={search}
                 onChange={setSearch}
@@ -157,7 +169,7 @@ export default function InventoryPage() {
             </div>
 
             {/* Filters */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-end text-black">
               <FilterSelect
                 id="locationFilter"
                 label="Ubicación"
@@ -214,13 +226,49 @@ export default function InventoryPage() {
             />
           </div>
 
+          {/* Pagination Info */}
+          <div className="px-6 py-2 bg-gray-50 border-t border-gray-200">
+            <div className="flex items-center justify-between text-sm text-gray-700">
+              <div>
+                Mostrando {startIndex + 1} a{" "}
+                {Math.min(endIndex, sortedData.length)} de {sortedData.length}{" "}
+                registros
+                {sortedData.length !== data.length &&
+                  ` (filtrados de ${data.length} totales)`}
+              </div>
+              <div className="flex items-center space-x-2">
+                <button
+                  onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
+                  disabled={currentPage === 1}
+                  className="px-3 py-1 text-sm bg-white border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  <i className="fas fa-chevron-left mr-1"></i>
+                  Anterior
+                </button>
+                <span className="px-3 py-1 text-sm">
+                  Página {currentPage} de {totalPages}
+                </span>
+                <button
+                  onClick={() =>
+                    setCurrentPage(Math.min(totalPages, currentPage + 1))
+                  }
+                  disabled={currentPage === totalPages}
+                  className="px-3 py-1 text-sm bg-white border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  Siguiente
+                  <i className="fas fa-chevron-right ml-1"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+
           {/* Table */}
           <div className="p-6">
             {loading ? (
               <LoadingSpinner />
             ) : (
               <SoftwareTable
-                data={sortedData}
+                data={paginatedData}
                 onSort={handleSort}
                 sortColumn={sortColumn}
                 sortDirection={sortDirection}

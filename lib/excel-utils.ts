@@ -53,7 +53,7 @@ export async function readApprovedSoftware(): Promise<string[]> {
         }
         const sheetName = workbook.SheetNames[0];
         const sheet = workbook.Sheets[sheetName];
-        const data = utils.sheet_to_json(sheet) as Record<string, any>[];
+        const data = utils.sheet_to_json(sheet) as Record<string, unknown>[];
         
         // Buscar la columna "Software"
         let softwareColumn: string | null = null;
@@ -90,7 +90,7 @@ export async function readApprovedSoftware(): Promise<string[]> {
             software.trim() &&
             software.toLowerCase() !== 'software'
           )
-          .map(software => normalizeSoftwareName(software.trim()));
+          .map(software => normalizeSoftwareName((software as string).trim()));
         
         approvedSoftwareCache = [...new Set(approvedList)]; // Eliminar duplicados
         lastExcelRead = new Date();

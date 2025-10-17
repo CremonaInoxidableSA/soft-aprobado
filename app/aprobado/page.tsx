@@ -27,6 +27,10 @@ export default function AprobadoPage() {
   >("equipo");
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
 
+  // Paginación
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
+
   // Cargar datos iniciales
   useEffect(() => {
     loadFilters();
@@ -112,6 +116,17 @@ export default function AprobadoPage() {
     return 0;
   });
 
+  // Paginación
+  const totalPages = Math.ceil(sortedData.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const paginatedData = sortedData.slice(startIndex, endIndex);
+
+  // Resetear página cuando cambian los filtros
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [search, equipoFilter, estadoFilter, softwareFilter]);
+
   // Calcular estadísticas
   const approvedCount = data.filter((item) => item.aprobado).length;
   const unapprovedCount = data.length - approvedCount;
@@ -119,7 +134,7 @@ export default function AprobadoPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-600 to-indigo-700 p-5">
       <div className="max-w-7xl mx-auto">
-        <div className="bg-white rounded-xl shadow-2xl overflow-hidden my-5">
+        <div className="bg-white rounded-sm shadow-2xl overflow-hidden my-5">
           {/* Header */}
           <header className="text-center p-8 border-b-2 border-gray-100">
             <h1 className="text-4xl font-light text-gray-800 mb-3">
@@ -241,13 +256,49 @@ export default function AprobadoPage() {
             />
           </div>
 
+          {/* Pagination Info */}
+          <div className="px-6 py-2 bg-gray-50 border-t border-gray-200">
+            <div className="flex items-center justify-between text-sm text-gray-700">
+              <div>
+                Mostrando {startIndex + 1} a{" "}
+                {Math.min(endIndex, sortedData.length)} de {sortedData.length}{" "}
+                registros
+                {sortedData.length !== data.length &&
+                  ` (filtrados de ${data.length} totales)`}
+              </div>
+              <div className="flex items-center space-x-2">
+                <button
+                  onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
+                  disabled={currentPage === 1}
+                  className="px-3 py-1 text-sm bg-white border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  <i className="fas fa-chevron-left mr-1"></i>
+                  Anterior
+                </button>
+                <span className="px-3 py-1 text-sm">
+                  Página {currentPage} de {totalPages}
+                </span>
+                <button
+                  onClick={() =>
+                    setCurrentPage(Math.min(totalPages, currentPage + 1))
+                  }
+                  disabled={currentPage === totalPages}
+                  className="px-3 py-1 text-sm bg-white border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  Siguiente
+                  <i className="fas fa-chevron-right ml-1"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+
           {/* Table */}
           <div className="p-6">
             {loading ? (
               <LoadingSpinner />
             ) : (
               <ApprovalTable
-                data={sortedData}
+                data={paginatedData}
                 onSort={handleSort}
                 sortColumn={sortColumn}
                 sortDirection={sortDirection}

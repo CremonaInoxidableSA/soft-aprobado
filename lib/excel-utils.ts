@@ -1,4 +1,4 @@
-import { readFile, utils } from 'xlsx';
+import { readFile, read, utils } from 'xlsx';
 import fs from 'fs';
 import { SOFTWARE_FILTERS } from './software-filters.config';
 
@@ -38,9 +38,19 @@ export function shouldExcludeSoftware(name: string): boolean {
 }
 
 // Función para leer el Excel de software aprobado
-export function readApprovedSoftware(): string[] {
+export async function readApprovedSoftware(): Promise<string[]> {
     try {
-        const workbook = readFile(EXCEL_PATH);
+        let workbook;
+        if (EXCEL_PATH.startsWith('http')) {
+            const response = await fetch(EXCEL_PATH);
+            if (!response.ok) {
+                throw new Error(`Failed to fetch Excel: ${response.status}`);
+            }
+            const buffer = await response.arrayBuffer();
+            workbook = read(buffer);
+        } else {
+            workbook = readFile(EXCEL_PATH);
+        }
         const sheetName = workbook.SheetNames[0];
         const sheet = workbook.Sheets[sheetName];
         const data = utils.sheet_to_json(sheet) as Record<string, any>[];
@@ -114,8 +124,8 @@ export function getLastExcelRead(): Date | null {
 }
 
 // Recargar software aprobado
-export function reloadApprovedSoftware(): { success: boolean; count: number; lastRead: Date } {
-  const software = readApprovedSoftware();
+export async function reloadApprovedSoftware(): Promise<{ success: boolean; count: number; lastRead: Date }> {
+  const software = await readApprovedSoftware();
   return {
     success: true,
     count: software.length,
@@ -124,10 +134,12 @@ export function reloadApprovedSoftware(): { success: boolean; count: number; las
 }
 
 // Inicializar cache al importar el módulo
-try {
-  if (approvedSoftwareCache.length === 0) {
-    readApprovedSoftware();
+(async () => {
+  try {
+    if (approvedSoftwareCache.length === 0) {
+      await readApprovedSoftware();
+    }
+  } catch (error) {
+    console.error('Error initializing approved software cache:', error);
   }
-} catch (error) {
-  console.error('Error initializing approved software cache:', error);
-}
+})();

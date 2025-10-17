@@ -23,7 +23,7 @@ export async function GET(request: Request) {
         c.name AS computadora,
         l.completename AS ubicacion,
         s.name AS software,
-        sv.version AS version
+        sv.name AS version
       FROM glpi_computers c
       INNER JOIN glpi_items_softwareversions isv ON c.id = isv.items_id AND isv.itemtype = 'Computer'
       INNER JOIN glpi_softwareversions sv ON isv.softwareversions_id = sv.id

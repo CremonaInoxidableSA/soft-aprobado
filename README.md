@@ -1,36 +1,94 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# GLPI Software Inventory - Next.js con TypeScript
 
-## Getting Started
+Sistema de inventario y control de software aprobado para GLPI, migrado a Next.js 15 con TypeScript.
 
-First, run the development server:
+## 🚀 Características
+
+- ✅ **Inventario General**: Consulta de software instalado por computadora
+- ✅ **Control de Software Aprobado**: Verificación automática contra lista de software aprobado
+- ✅ **Filtros Avanzados**: Por ubicación, equipo, software y estado
+- ✅ **Búsqueda en Tiempo Real**: Búsqueda instantánea en todos los campos
+- ✅ **Normalización Automática**: Agrupa diferentes versiones del mismo software
+- ✅ **Lectura de Excel**: Carga automática desde SharePoint/OneDrive
+- ✅ **Responsive Design**: Compatible con dispositivos móviles y desktop
+
+## 📋 Requisitos Previos
+
+- Node.js 18+ 
+- npm o yarn
+- Acceso a base de datos GLPI (MariaDB/MySQL)
+- Acceso al archivo Excel de software aprobado
+
+## 🔧 Instalación
+
+1. **Instalar dependencias**
+
+```bash
+npm install
+```
+
+2. **Configurar variables de entorno**
+
+Crea un archivo `.env` basado en `.env.example`:
+
+```env
+DB_HOST=192.168.20.198
+DB_USER=cremona_glpi
+DB_PASSWORD=tu_password
+DB_NAME=glpi
+DB_PORT=3306
+
+EXCEL_PATH=C:\Users\tu_usuario\...\RP_Software_Aprobado.xlsx
+```
+
+3. **Iniciar el servidor de desarrollo**
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+El proyecto estará disponible en: `http://localhost:3000`
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 🏗️ Estructura del Proyecto
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```
+soft-aprobado/
+├── app/
+│   ├── api/                    # API Routes (endpoints REST)
+│   ├── inventario/             # Página de inventario general
+│   ├── aprobado/               # Página de software aprobado
+│   └── layout.tsx              # Layout principal
+├── components/                 # Componentes React reutilizables
+├── lib/                        # Utilidades y lógica de backend
+│   ├── types.ts                # Definiciones de tipos TypeScript
+│   ├── db.ts                   # Configuración de base de datos
+│   ├── excel-utils.ts          # Utilidades para leer Excel
+│   └── software-filters.config.ts # Configuración de filtros
+└── package.json
+```
 
-## Learn More
+## 📡 Rutas Principales
 
-To learn more about Next.js, take a look at the following resources:
+- `/` - Página de inicio (redirige a /inventario)
+- `/inventario` - Inventario general de software
+- `/aprobado` - Control de software aprobado/desaprobado
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## 📦 Scripts Disponibles
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```bash
+npm run dev        # Iniciar servidor de desarrollo
+npm run build      # Compilar para producción
+npm run start      # Iniciar servidor de producción
+npm run lint       # Ejecutar linter
+```
 
-## Deploy on Vercel
+## 🔧 Configuración de Filtros
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Puedes personalizar los filtros de software editando `lib/software-filters.config.ts`:
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- **exclude**: Patrones regex para excluir software irrelevante (actualizaciones, drivers, etc.)
+- **normalize**: Reglas para normalizar nombres de software (agrupar versiones)
+
+## 📄 Licencia
+
+© 2025 Cremona Inoxidable SA - Uso interno

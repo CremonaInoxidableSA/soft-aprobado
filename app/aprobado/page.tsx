@@ -132,8 +132,8 @@ export default function AprobadoPage() {
   const unapprovedCount = data.length - approvedCount;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-600 to-indigo-700 p-5">
-      <div className="max-w-7xl mx-auto">
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 to-red-700 p-5">
+      <div className="mx-auto">
         <div className="bg-white rounded-sm shadow-2xl overflow-hidden my-5">
           {/* Header */}
           <header className="text-center p-8 border-b-2 border-gray-100">
@@ -162,7 +162,7 @@ export default function AprobadoPage() {
           </header>
 
           {/* Controls */}
-          <div className="bg-gray-50 p-6">
+          <div className="bg-gray-50 p-6 text-black">
             {/* Search */}
             <div className="mb-6">
               <SearchBox
@@ -174,7 +174,7 @@ export default function AprobadoPage() {
             </div>
 
             {/* Filters */}
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4 items-end text-black">
               <FilterSelect
                 id="equipoFilter"
                 label="Equipo"

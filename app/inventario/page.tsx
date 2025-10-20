@@ -11,6 +11,7 @@ import LoadingSpinner from "@/components/LoadingSpinner";
 
 export default function InventoryPage() {
   const [data, setData] = useState<SoftwareRecord[]>([]);
+  const [totalRecords, setTotalRecords] = useState(0);
   const [locations, setLocations] = useState<LocationData[]>([]);
   const [softwares, setSoftwares] = useState<SoftwareData[]>([]);
   const [loading, setLoading] = useState(true);
@@ -33,6 +34,7 @@ export default function InventoryPage() {
   // Cargar datos iniciales
   useEffect(() => {
     loadFilters();
+    loadTotalRecords();
   }, []);
 
   // Cargar datos cuando cambian los filtros
@@ -65,6 +67,21 @@ export default function InventoryPage() {
       console.error("Error loading filters:", error);
       setLocations([]);
       setSoftwares([]);
+    }
+  };
+
+  const loadTotalRecords = async () => {
+    try {
+      const response = await fetch("/api/software");
+      if (response.ok) {
+        const result = await response.json();
+        if (Array.isArray(result)) {
+          setTotalRecords(result.length);
+        }
+      }
+    } catch (error) {
+      console.error("Error loading total records:", error);
+      setTotalRecords(0);
     }
   };
 
@@ -137,8 +154,8 @@ export default function InventoryPage() {
   }, [search, locationFilter, softwareFilter]);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-600 to-indigo-700 p-5">
-      <div className="max-w-7xl mx-auto">
+    <div className="min-h-screen bg-gradient-to-br from-red-800 to-gray-900 p-5">
+      <div className="mx-auto">
         <div className="bg-white rounded-sm shadow-2xl overflow-hidden my-5">
           {/* Header */}
           <header className="text-center p-8 border-b-2 border-gray-100">
@@ -215,7 +232,7 @@ export default function InventoryPage() {
             <StatsCard
               icon="fas fa-list"
               label="Total de registros"
-              value={data.length}
+              value={totalRecords}
               color="blue"
             />
             <StatsCard
@@ -233,8 +250,8 @@ export default function InventoryPage() {
                 Mostrando {startIndex + 1} a{" "}
                 {Math.min(endIndex, sortedData.length)} de {sortedData.length}{" "}
                 registros
-                {sortedData.length !== data.length &&
-                  ` (filtrados de ${data.length} totales)`}
+                {sortedData.length !== totalRecords &&
+                  ` (filtrados de ${totalRecords} totales)`}
               </div>
               <div className="flex items-center space-x-2">
                 <button

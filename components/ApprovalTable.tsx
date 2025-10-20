@@ -87,6 +87,16 @@ export default function ApprovalTable({
                 </div>
               </th>
               <th
+                onClick={() => handleSort("ubicacion")}
+                className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+              >
+                <div className="flex items-center">
+                  <i className="fas fa-map-marker-alt mr-2"></i>
+                  Ubicación
+                  {getSortIcon("ubicacion")}
+                </div>
+              </th>
+              <th
                 onClick={() => handleSort("software")}
                 className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
               >
@@ -124,6 +134,9 @@ export default function ApprovalTable({
               >
                 <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                   {item.equipo || "N/A"}
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                  {item.ubicacion || "Sin ubicación"}
                 </td>
                 <td className="px-6 py-4 text-sm text-gray-900">
                   {item.software || "N/A"}

@@ -4,7 +4,9 @@ import { SoftwareApprovalRecord } from '@/lib/types';
 import { 
   shouldExcludeSoftware, 
   normalizeSoftwareName,
-  isSoftwareApproved 
+  isSoftwareApproved,
+  readApprovedSoftware,
+  getApprovedSoftwareCache
 } from '@/lib/excel-utils';
 
 export async function GET(request: Request) {
@@ -15,6 +17,13 @@ export async function GET(request: Request) {
     const estado = searchParams.get('estado') || 'all';
     const software = searchParams.get('software') || 'all';
 
+    // Inicializar cache de software aprobado si está vacío
+    if (getApprovedSoftwareCache().length === 0) {
+      console.log('🔄 Inicializando cache de software aprobado desde API...');
+      await readApprovedSoftware();
+      console.log('✅ Cache inicializado con', getApprovedSoftwareCache().length, 'elementos');
+    }
+
     const pool = await getDbPool();
     
     let query = `
@@ -23,13 +32,22 @@ export async function GET(request: Request) {
         c.name AS computadora,
         l.completename AS ubicacion,
         s.name AS software,
-        sv.name AS version
-      FROM glpi_computers c
-      INNER JOIN glpi_items_softwareversions isv ON c.id = isv.items_id AND isv.itemtype = 'Computer'
-      INNER JOIN glpi_softwareversions sv ON isv.softwareversions_id = sv.id
-      INNER JOIN glpi_softwares s ON sv.softwares_id = s.id
-      LEFT JOIN glpi_locations l ON c.locations_id = l.id
+        sv.name AS version,
+        sc.name AS categoria
+      FROM glpi_items_softwareversions isv
+      JOIN glpi_computers c
+          ON isv.items_id = c.id
+          AND isv.itemtype = 'Computer'
+      JOIN glpi_softwareversions sv
+          ON isv.softwareversions_id = sv.id
+      JOIN glpi_softwares s
+          ON sv.softwares_id = s.id
+      LEFT JOIN glpi_locations l
+          ON c.locations_id = l.id
+      LEFT JOIN glpi_softwarecategories sc
+          ON s.softwarecategories_id = sc.id
       WHERE c.is_deleted = 0 AND c.is_template = 0
+          AND (sc.name IS NULL OR sc.name NOT IN ('system', 'update', 'system_update'))
     `;
     
     const params: string[] = [];
@@ -53,7 +71,7 @@ export async function GET(request: Request) {
       params.push(software);
     }
     
-    query += ' ORDER BY c.name, s.name';
+    query += ' ORDER BY l.completename, c.name, s.name';
     
     const [rows] = await pool.execute(query, params);
     let data = rows as SoftwareApprovalRecord[];

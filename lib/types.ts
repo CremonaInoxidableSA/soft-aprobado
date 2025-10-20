@@ -5,6 +5,7 @@ export interface SoftwareRecord {
   ubicacion: string;
   software: string;
   version: string;
+  categoria: string;
 }
 
 export interface SoftwareApprovalRecord extends SoftwareRecord {

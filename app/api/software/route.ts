@@ -16,13 +16,22 @@ export async function GET(request: Request) {
       c.name AS computadora,
       l.completename AS ubicacion,
       s.name AS software,
-      sv.name AS version
-    FROM glpi_computers c
-    INNER JOIN glpi_items_softwareversions isv ON c.id = isv.items_id AND isv.itemtype = 'Computer'
-    INNER JOIN glpi_softwareversions sv ON isv.softwareversions_id = sv.id
-    INNER JOIN glpi_softwares s ON sv.softwares_id = s.id
-    LEFT JOIN glpi_locations l ON c.locations_id = l.id
+      sv.name AS version,
+      sc.name AS categoria
+    FROM glpi_items_softwareversions isv
+    JOIN glpi_computers c
+        ON isv.items_id = c.id
+        AND isv.itemtype = 'Computer'
+    JOIN glpi_softwareversions sv
+        ON isv.softwareversions_id = sv.id
+    JOIN glpi_softwares s
+        ON sv.softwares_id = s.id
+    LEFT JOIN glpi_locations l
+        ON c.locations_id = l.id
+    LEFT JOIN glpi_softwarecategories sc
+        ON s.softwarecategories_id = sc.id
     WHERE c.is_deleted = 0 AND c.is_template = 0
+        AND (sc.name IS NULL OR sc.name NOT IN ('system', 'update', 'system_update'))
   `;
   
   const params: string[] = [];
@@ -48,7 +57,7 @@ export async function GET(request: Request) {
     params.push(software);
   }
   
-  query += ' ORDER BY c.name, s.name';
+  query += ' ORDER BY l.completename, c.name, s.name';
   
   const [rows] = await pool.execute(query, params);
   const data = rows as SoftwareRecord[];

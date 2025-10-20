@@ -12,7 +12,9 @@ export async function GET() {
       FROM glpi_softwares s
       INNER JOIN glpi_softwareversions sv ON s.id = sv.softwares_id
       INNER JOIN glpi_items_softwareversions isv ON sv.id = isv.softwareversions_id
+      LEFT JOIN glpi_softwarecategories sc ON s.softwarecategories_id = sc.id
       WHERE isv.itemtype = 'Computer'
+          AND (sc.name IS NULL OR sc.name NOT IN ('system', 'update', 'system_update'))
       ORDER BY s.name
     `;
     

@@ -1,10 +1,10 @@
 import { readFile, read, utils } from 'xlsx';
 import fs from 'fs';
+import path from 'path';
 import { SOFTWARE_FILTERS } from './software-filters.config';
 
 // Ruta al archivo Excel de software aprobado
-const EXCEL_PATH = process.env.EXCEL_PATH || 
-  './public/RP_Software_Aprobado.xlsx';
+const EXCEL_PATH = path.join(process.cwd(), 'data', 'uploads', 'RP_Software_Aprobado.xlsx');
 
 // Cache para software aprobado
 let approvedSoftwareCache: string[] = [];
@@ -40,6 +40,19 @@ export function shouldExcludeSoftware(name: string): boolean {
 // Función para leer el Excel de software aprobado
 export async function readApprovedSoftware(): Promise<string[]> {
     try {
+        console.log('📖 Intentando leer archivo Excel de software aprobado...');
+
+        // Verificar si el archivo existe antes de intentar leerlo
+        if (!fs.existsSync(EXCEL_PATH)) {
+            console.warn(`❌ Approved software Excel file not found at: ${EXCEL_PATH}`);
+            console.warn('Please ensure the file exists and OneDrive is synchronized.');
+            approvedSoftwareCache = [];
+            lastExcelRead = null;
+            return [];
+        }
+
+        console.log('✅ Archivo Excel encontrado, procediendo a leer...');
+
         let workbook;
         if (EXCEL_PATH.startsWith('http')) {
             const response = await fetch(EXCEL_PATH);
@@ -53,37 +66,20 @@ export async function readApprovedSoftware(): Promise<string[]> {
         }
         const sheetName = workbook.SheetNames[0];
         const sheet = workbook.Sheets[sheetName];
-        const data = utils.sheet_to_json(sheet) as Record<string, unknown>[];
         
-        // Buscar la columna "Software"
-        let softwareColumn: string | null = null;
+        // Convertir la hoja a un array de arrays (filas)
+        const data = utils.sheet_to_json(sheet, { header: 1 }) as unknown[][];
         
-        if (data.length > 0) {
-          const firstRow = data[0];
-          
-          // Primero verificar si __EMPTY_1 contiene "Software"
-          if (firstRow['__EMPTY_1'] === 'Software') {
-            softwareColumn = '__EMPTY_1';
-          } else {
-            // Buscar columna que contenga "Software" en el nombre o valor
-            softwareColumn = Object.keys(firstRow).find(key => 
-              key.toLowerCase().includes('software') || 
-              (typeof firstRow[key] === 'string' && firstRow[key].toLowerCase() === 'software')
-            ) || null;
-          }
-        }
+        console.log(`📋 Hoja "${sheetName}" cargada con ${data.length} filas`);
         
-        if (!softwareColumn) {
-          return [];
-        }
+        // La columna C es el índice 2 (A=0, B=1, C=2)
+        const softwareColumnIndex = 2;
         
-        // Extraer la columna "Software" y normalizar
-        // Saltar la primera fila si es encabezado
-        const startRow = data[0][softwareColumn] === 'Software' ? 1 : 0;
-        
+        // Extraer la columna C, saltando las primeras 3 filas (encabezados)
+        // y tomando desde la fila 4 en adelante
         const approvedList = data
-          .slice(startRow)
-          .map(row => row[softwareColumn!])
+          .slice(3) // Saltar las primeras 3 filas (título, fila vacía, encabezados)
+          .map(row => row[softwareColumnIndex]) // Obtener el valor de la columna C
           .filter(software => 
             software && 
             typeof software === 'string' && 
@@ -94,6 +90,9 @@ export async function readApprovedSoftware(): Promise<string[]> {
         
         approvedSoftwareCache = [...new Set(approvedList)]; // Eliminar duplicados
         lastExcelRead = new Date();
+        
+        console.log(`✅ Excel procesado correctamente. Encontrados ${approvedSoftwareCache.length} elementos únicos de software aprobado`);
+        
         return approvedSoftwareCache;
     } catch (error) {
         console.error('Error reading approved software Excel file:', error);
@@ -134,12 +133,6 @@ export async function reloadApprovedSoftware(): Promise<{ success: boolean; coun
 }
 
 // Inicializar cache al importar el módulo
-(async () => {
-  try {
-    if (approvedSoftwareCache.length === 0) {
-      await readApprovedSoftware();
-    }
-  } catch (error) {
-    console.error('Error initializing approved software cache:', error);
-  }
-})();
+// Nota: En Next.js, la inicialización asíncrona puede no ejecutarse correctamente
+// La inicialización se hará explícitamente desde las APIs que lo necesiten
+console.log('📦 Módulo excel-utils cargado. Cache inicial vacío:', approvedSoftwareCache.length);

@@ -52,23 +52,9 @@ export async function GET(request: Request) {
     
     const params: string[] = [];
     
-    if (search) {
-      query += ` AND (
-        c.name LIKE ? OR 
-        s.name LIKE ?
-      )`;
-      const searchTerm = `%${search}%`;
-      params.push(searchTerm, searchTerm);
-    }
-    
     if (equipo !== 'all') {
       query += ' AND c.name = ?';
       params.push(equipo);
-    }
-    
-    if (software !== 'all') {
-      query += ' AND s.name = ?';
-      params.push(software);
     }
     
     query += ' ORDER BY l.completename, c.name, s.name';
@@ -87,6 +73,20 @@ export async function GET(request: Request) {
           aprobado: isSoftwareApproved(normalizedSoftware),
         };
       });
+    
+    // Aplicar filtro de software específico
+    if (software !== 'all') {
+      data = data.filter(item => item.software === software);
+    }
+    
+    // Aplicar búsqueda en los datos normalizados
+    if (search) {
+      const searchLower = search.toLowerCase();
+      data = data.filter(item =>
+        item.computadora.toLowerCase().includes(searchLower) ||
+        item.software.toLowerCase().includes(searchLower)
+      );
+    }
     
     // Eliminar duplicados por computadora + software
     data = Array.from(

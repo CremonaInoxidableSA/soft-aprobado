@@ -4,7 +4,7 @@ import path from 'path';
 import { SOFTWARE_FILTERS } from './software-filters.config';
 
 // Ruta al archivo Excel de software aprobado
-const EXCEL_PATH = path.join(process.cwd(), 'data', 'uploads', 'RP_Software_Aprobado.xlsx');
+const EXCEL_PATH = path.join(process.cwd(), 'data', 'RP_Software_Aprobado.xlsx');
 
 // Cache para software aprobado
 let approvedSoftwareCache: string[] = [];
@@ -28,13 +28,26 @@ export function normalizeSoftwareName(name: string): string {
 export function shouldExcludeSoftware(name: string): boolean {
   if (!name) return true;
   
+  let isExcluded = false;
   for (const pattern of SOFTWARE_FILTERS.exclude) {
     if (pattern.test(name)) {
-      return true;
+      isExcluded = true;
+      break;
     }
   }
   
-  return false;
+  if (!isExcluded) return false;
+  
+  // Si está excluido, verificar si debe incluirse
+  if (SOFTWARE_FILTERS.include) {
+    for (const pattern of SOFTWARE_FILTERS.include) {
+      if (pattern.test(name)) {
+        return false; // Incluir si coincide con patrón de inclusión
+      }
+    }
+  }
+  
+  return true; // Excluir si no coincide con inclusión
 }
 
 // Función para leer el Excel de software aprobado

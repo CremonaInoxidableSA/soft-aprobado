@@ -36,6 +36,7 @@ export interface SoftwareFilter {
 
 export interface SoftwareFiltersConfig {
   exclude: RegExp[];
+  include?: RegExp[];
   normalize: SoftwareFilter[];
 }
 

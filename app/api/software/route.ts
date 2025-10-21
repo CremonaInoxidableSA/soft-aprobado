@@ -36,25 +36,9 @@ export async function GET(request: Request) {
   
   const params: string[] = [];
   
-  if (search) {
-    query += ` AND (
-      c.name LIKE ? OR 
-      l.completename LIKE ? OR 
-      s.name LIKE ? OR 
-      sv.name LIKE ?
-    )`;
-    const searchTerm = `%${search}%`;
-    params.push(searchTerm, searchTerm, searchTerm, searchTerm);
-  }
-  
   if (location !== 'all') {
     query += ' AND l.completename = ?';
     params.push(location);
-  }
-  
-  if (software !== 'all') {
-    query += ' AND s.name = ?';
-    params.push(software);
   }
   
   query += ' ORDER BY l.completename, c.name, s.name';
@@ -63,12 +47,28 @@ export async function GET(request: Request) {
   const data = rows as SoftwareRecord[];
   
   // Filtrar y normalizar software
-  const filteredData = data
+  let filteredData = data
     .filter(item => !shouldExcludeSoftware(item.software))
     .map(item => ({
       ...item,
       software: normalizeSoftwareName(item.software),
     }));
+  
+  // Aplicar filtro de software específico
+  if (software !== 'all') {
+    filteredData = filteredData.filter(item => item.software === software);
+  }
+  
+  // Aplicar búsqueda en el software normalizado
+  if (search) {
+    const searchLower = search.toLowerCase();
+    filteredData = filteredData.filter(item =>
+      item.computadora.toLowerCase().includes(searchLower) ||
+      item.ubicacion?.toLowerCase().includes(searchLower) ||
+      item.software.toLowerCase().includes(searchLower) ||
+      item.version.toLowerCase().includes(searchLower)
+    );
+  }
   
   // Eliminar duplicados por computadora + software
   const uniqueData = Array.from(

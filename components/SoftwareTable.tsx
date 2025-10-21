@@ -61,27 +61,6 @@ export default function SoftwareTable({
 
   return (
     <div>
-      <div className="flex justify-between items-center mb-4">
-        <div>
-          <label
-            htmlFor="rowsPerPage"
-            className="text-sm font-medium text-gray-700"
-          >
-            Filas por página:
-          </label>
-          <select
-            id="rowsPerPage"
-            value={rowsPerPage}
-            onChange={(e) => setRowsPerPage(Number(e.target.value))}
-            className="ml-2 border border-gray-300 rounded px-2 py-1"
-          >
-            <option value={10}>10</option>
-            <option value={25}>25</option>
-            <option value={50}>50</option>
-            <option value={100}>100</option>
-          </select>
-        </div>
-      </div>
       <div className="overflow-x-auto rounded-lg border border-gray-200">
         <table className="min-w-full divide-y divide-gray-200">
           <thead className="bg-gray-50">
@@ -89,16 +68,18 @@ export default function SoftwareTable({
               <th
                 onClick={() => handleSort("computadora")}
                 className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+                style={{ width: "10%" }}
               >
                 <div className="flex items-center">
                   <i className="fas fa-desktop mr-2"></i>
-                  Computadora
+                  Equipo
                   {getSortIcon("computadora")}
                 </div>
               </th>
               <th
                 onClick={() => handleSort("ubicacion")}
                 className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+                style={{ width: "15%" }}
               >
                 <div className="flex items-center">
                   <i className="fas fa-map-marker-alt mr-2"></i>
@@ -109,6 +90,7 @@ export default function SoftwareTable({
               <th
                 onClick={() => handleSort("software")}
                 className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+                style={{ width: "60%" }}
               >
                 <div className="flex items-center">
                   <i className="fas fa-puzzle-piece mr-2"></i>
@@ -119,6 +101,7 @@ export default function SoftwareTable({
               <th
                 onClick={() => handleSort("version")}
                 className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+                style={{ width: "15%" }}
               >
                 <div className="flex items-center">
                   <i className="fas fa-tag mr-2"></i>

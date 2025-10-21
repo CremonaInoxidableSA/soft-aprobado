@@ -88,6 +88,18 @@ export async function GET(request: Request) {
         };
       });
     
+    // Eliminar duplicados por computadora + software
+    data = Array.from(
+      data.reduce((map, item) => {
+        const key = `${item.computadora}-${item.software}`;
+        if (!map.has(key)) {
+          map.set(key, item);
+        }
+        return map;
+      }, new Map<string, SoftwareApprovalRecord>())
+      .values()
+    );
+    
     // Filtrar por estado de aprobación
     if (estado === 'aprobado') {
       data = data.filter(item => item.aprobado);

@@ -70,5 +70,17 @@ export async function GET(request: Request) {
       software: normalizeSoftwareName(item.software),
     }));
   
-  return NextResponse.json(filteredData);
+  // Eliminar duplicados por computadora + software
+  const uniqueData = Array.from(
+    filteredData.reduce((map, item) => {
+      const key = `${item.computadora}-${item.software}`;
+      if (!map.has(key)) {
+        map.set(key, item);
+      }
+      return map;
+    }, new Map<string, SoftwareRecord>())
+    .values()
+  );
+  
+  return NextResponse.json(uniqueData);
 }

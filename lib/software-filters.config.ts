@@ -59,20 +59,20 @@ export const SOFTWARE_FILTERS: SoftwareFiltersConfig = {
     /Autodesk Inventor Professional 2022 - English	/i,
     /microsoft windowscommunicationsapps/i,
     /X-Mouse Button Control 2.20.5	/i,
-    //i,
-    //i,
-    //i,
-    //i,
-    //i,
-    //i,
-    //i,
-    //i,
-    //i,
+    /Cortana/i,
+    /Game/i,
+    /Internet Explorer/i,
+    /Autodesk Inventor Content Center Libraries 2022 (Desktop Content)	/i,
+    /Autodesk Inventor Professional 2022 - English	/i,
+    /Autodesk Inventor Professional 2022 English/i,
+    /Autodesk Material Library/i,
+    /Autodesk Network License Manager/i,
     //i,
     //i,
     //i,
     //i,
     /Edge/i,
+    /^Copilot$/i,  // Excluir solo "Copilot" exactamente
   ],
   
   // Patrones para normalizar nombres de software
@@ -80,5 +80,6 @@ export const SOFTWARE_FILTERS: SoftwareFiltersConfig = {
     { pattern: /^(Adobe Acrobat)(?:\s+DC|\s+\d+|\s+Reader|\s+Pro|\s+\(64-bits\))?.*$/i, replacement: '$1' },
     { pattern: /^(draw\.io)\s+.*$/i, replacement: '$1' },
     { pattern: /^(WinRAR)\s+.*$/i, replacement: '$1' },
+    { pattern: /^Clipchamp(\.Clipchamp)?$/i, replacement: 'Clipchamp' },
   ]
 };

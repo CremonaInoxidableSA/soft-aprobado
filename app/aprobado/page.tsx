@@ -96,14 +96,6 @@ export default function AprobadoPage() {
     setSoftwareFilter("all");
   };
 
-  const handleReloadApproved = async () => {
-    const response = await fetch("/api/reload-approved", { method: "POST" });
-    const result = await response.json();
-
-    alert(`Lista recargada exitosamente\n${result.count} software aprobados`);
-    loadData();
-  };
-
   // Ordenar datos
   const sortedData = [...data].sort((a, b) => {
     if (!sortColumn) return 0;
@@ -152,12 +144,6 @@ export default function AprobadoPage() {
               >
                 <i className="fas fa-home"></i> Inventario General
               </Link>
-              <button
-                onClick={handleReloadApproved}
-                className="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-pink-500 to-rose-500 text-white rounded-lg font-medium transition-all hover:shadow-lg hover:-translate-y-0.5"
-              >
-                <i className="fas fa-sync-alt"></i> Recargar Lista Aprobados
-              </button>
             </div>
           </header>
 

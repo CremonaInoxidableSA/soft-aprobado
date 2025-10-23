@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import Link from "next/link";
 import { SoftwareApprovalRecord, EquipoData, SoftwareData } from "@/lib/types";
 import ApprovalTable from "@/components/ApprovalTable";
 import SearchBox from "@/components/SearchBox";
@@ -29,7 +28,7 @@ export default function AprobadoPage() {
 
   // Paginación
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 10;
+  const [itemsPerPage, setItemsPerPage] = useState(10);
 
   // Cargar datos iniciales
   useEffect(() => {
@@ -137,14 +136,6 @@ export default function AprobadoPage() {
               Verificación de software instalado vs. software aprobado por la
               empresa
             </p>
-            <div className="flex gap-4 justify-center">
-              <Link
-                href="/inventario"
-                className="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-purple-600 to-indigo-600 text-white rounded-lg font-medium transition-all hover:shadow-lg hover:-translate-y-0.5"
-              >
-                <i className="fas fa-home"></i> Inventario General
-              </Link>
-            </div>
           </header>
 
           {/* Controls */}
@@ -245,12 +236,35 @@ export default function AprobadoPage() {
           {/* Pagination Info */}
           <div className="px-6 py-2 bg-gray-50 border-t border-gray-200">
             <div className="flex items-center justify-between text-sm text-gray-700">
-              <div>
-                Mostrando {startIndex + 1} a{" "}
-                {Math.min(endIndex, sortedData.length)} de {sortedData.length}{" "}
-                registros
-                {sortedData.length !== data.length &&
-                  ` (filtrados de ${data.length} totales)`}
+              <div className="flex items-center space-x-4">
+                <div>
+                  Mostrando {startIndex + 1} a{" "}
+                  {Math.min(endIndex, sortedData.length)} de {sortedData.length}{" "}
+                  registros
+                  {sortedData.length !== data.length &&
+                    ` (filtrados de ${data.length} totales)`}
+                </div>
+                <div className="flex items-center space-x-2">
+                  <label htmlFor="itemsPerPage" className="text-sm">
+                    Filas por página:
+                  </label>
+                  <select
+                    id="itemsPerPage"
+                    value={itemsPerPage}
+                    onChange={(e) => {
+                      setItemsPerPage(Number(e.target.value));
+                      setCurrentPage(1); // Reset to first page when changing items per page
+                    }}
+                    className="px-2 py-1 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                  >
+                    <option value={10}>10</option>
+                    <option value={20}>20</option>
+                    <option value={50}>50</option>
+                    <option value={100}>100</option>
+                    <option value={500}>500</option>
+                    <option value={1000}>1000</option>
+                  </select>
+                </div>
               </div>
               <div className="flex items-center space-x-2">
                 <button

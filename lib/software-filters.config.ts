@@ -60,6 +60,7 @@ export const SOFTWARE_FILTERS: SoftwareFiltersConfig = {
     /Autodesk Network License Manager/i,
     /Cortana/i,
     /Edge/i,
+    /EPLAN License/i,
     /Game/i,
     /Guardar en la versión web y para dispositivos móviles de Autodesk/i,
     /GLPI Agent 1.15/i,
@@ -71,6 +72,7 @@ export const SOFTWARE_FILTERS: SoftwareFiltersConfig = {
     /microsoft windowscommunicationsapps/i,
     /Click-to-Run/i,
     /OfficePushNotificationsUtility/i,
+    /TIA Portal Project Server Single/i,
     /Update/i,
     /Upgrade/i,
     /X-Mouse Button Control 2.20.5/i,
@@ -114,6 +116,11 @@ export const SOFTWARE_FILTERS: SoftwareFiltersConfig = {
     { pattern: /^Microsoft PowerAutomateDesktop\s*$/i, replacement: 'Power Automate' },
     { pattern: /^(Python)\s+.*$/i, replacement: '$1' },
     { pattern: /^(PowerToys)\s+.*$/i, replacement: '$1' },
+    
     { pattern: /^(WinRAR)\s+.*$/i, replacement: '$1' },
+
+    { pattern: /.*EPLAN.*2\.9.*/i, replacement: 'EPLAN 2.9' },
+    { pattern: /(Totally Integrated Automation Portal V16)\s+.*$/i, replacement: 'Siemens TIA Portal V16' },
+    { pattern: /(Totally Integrated Automation Portal V17)\s+.*$/i, replacement: 'Siemens TIA Portal V17' },
   ]
 };

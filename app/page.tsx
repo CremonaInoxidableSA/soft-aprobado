@@ -1,6 +1,6 @@
 import { redirect } from 'next/navigation';
 
 export default function Home() {
-  // Redirigir a la página de inventario
-  redirect('/inventario');
+  // Redirigir a la página de aprobado
+  redirect('/aprobado');
 }

@@ -1,6 +1,4 @@
 "use client";
-
-import { useState } from "react";
 import { SoftwareApprovalRecord } from "@/lib/types";
 
 interface ApprovalTableProps {
@@ -16,8 +14,6 @@ export default function ApprovalTable({
   sortColumn,
   sortDirection,
 }: ApprovalTableProps) {
-  const [rowsPerPage, setRowsPerPage] = useState(10);
-
   const handleSort = (column: keyof SoftwareApprovalRecord) => {
     if (onSort) {
       onSort(column);
@@ -111,7 +107,7 @@ export default function ApprovalTable({
             </tr>
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
-            {data.slice(0, rowsPerPage).map((item, index) => (
+            {data.map((item, index) => (
               <tr
                 key={index}
                 className={`transition-colors ${

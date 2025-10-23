@@ -1,7 +1,7 @@
 import { SoftwareFiltersConfig } from './types';
 export const SOFTWARE_FILTERS: SoftwareFiltersConfig = {
   exclude: [
-    // Inician con (alfabéticamente ordenados)
+    // Inician con
     /^AppServ 8.4.0/i,
     /^Asistente para actualización a Windows/i,
     /^Asistente para la instalación de Windows/i,
@@ -20,6 +20,7 @@ export const SOFTWARE_FILTERS: SoftwareFiltersConfig = {
     /^REX Inventor/i,
     /^Security Update for/i,
     /^Update for Windows/i,
+    /^USB Link Cable/i,
     /^User Management Component/i,
     /^vcredist/i,
     /^Widgets/,
@@ -32,7 +33,7 @@ export const SOFTWARE_FILTERS: SoftwareFiltersConfig = {
     /^WindowsApp/,
     /^\{.*\}$/,
 
-    // Contienen (alfabéticamente ordenados)
+    // Contienen
     /.*@BIOS.*/i,
     /.*\.NET.*/i,
     /.*ACA &#38; MEP 2022 Object Enabler.*/i,
@@ -60,28 +61,38 @@ export const SOFTWARE_FILTERS: SoftwareFiltersConfig = {
     /.*Branding64.*/i,
     /.*Click-to-Run.*/i,
     /.*Cortana.*/i,
+    /.*Dolby.*/i,
     /.*Edge.*/i,
     /.*EPLAN License.*/i,
+    /.*Fingerprint.*/i,
     /.*Game.*/i,
     /.*GLPI.*/i,
+    /.*GPIO.*/i,
     /.*Guardar en la versión web y para dispositivos móviles de Autodesk.*/i,
     /.*HPDXP.*/i,
     /.*HPLJ.*/i,
     /.*Intel.*/i,
     /.*Internet Explorer.*/i,
+    /.*Lenovo.*/i,
     /.*License Manager.*/i,
     /.*Local Experience Pack.*/i,
     /.*Microsoft 365 Copilot.*/i,
     /.*Microsoft Office ActionsServer.*/i,
     /.*microsoft windowscommunicationsapps.*/i,
+    /.*NBX-MS/i,
     /.*NVIDIA.*/i,
     /.*OfficePushNotificationsUtility.*/i,
+    /.*OneNote.*/i,
+    /.*Realtek.*/i,
+    /.*Runtime.*/i,
+    /.*Shell.*/i,
     /.*SIMATIC.*/i,
     /.*SnippingTool.*/i,
     /.*Speech Pack.*/i,
     /.*Synaptics TouchPad Control Panel.*/i,
     /.*TIA Administrator.*/i,
     /.*TIA Portal Project Server Single.*/i,
+    /.*TrackPoint.*/i,
     /.*Update.*/i,
     /.*Upgrade.*/i,
     /.*X-Mouse Button Control 2.20.5.*/i,
@@ -89,20 +100,21 @@ export const SOFTWARE_FILTERS: SoftwareFiltersConfig = {
     /\bHP\b/i,
     /.*hpStatusAlerts.*/i,
 
-    // Nombre (alfabéticamente ordenados)
+    // Nombre
+    /^Blackmagic RAW Common Components$/i,
     /^Comprobación de estado de PC Windows$/i,
     /^Copilot$/i,
     /^Core$/i,
     /^CoreRepository$/i,
+    /^CrystalDiskInfo SQL Diagnostics$/i,
     /^Dynamic Application Loader Host Interface Service$/i,
+    /^E0469640.SmartAppearance$/i,
     /^hppLaserJetService$/i,
     /^ShellEx Package$/i,
     /^Teams Machine-Wide Installer$/i,
     /^TelemetryConnector$/i,
     /^TJ1 Device Driver$/i,
-    /^TrackPoint$/i,
     /^Uninstall Samsung Printer Software$/i,
-    /^USB Link Cable/i,
     /^中文\(简体\)本地体验包$/i,
     /^惠普优享服务$/i,
     /\bInstaller\b/i,
@@ -177,13 +189,24 @@ export const SOFTWARE_FILTERS: SoftwareFiltersConfig = {
     { pattern: /.*Vijeo Designer.*/i, replacement: 'Vijeo Designer' },
 
     { pattern: /.*Spotify.*/i, replacement: 'Spotify' },
-    { pattern: /.*McAfee.*/i, replacement: 'McAfee Security' },
     { pattern: /.*EPLAN.*2\.9.*/i, replacement: 'EPLAN 2.9' },
-    { pattern: /.*I\.V\.A\.*/i, replacement: 'I.V.A.' },
-    { pattern: /.*CX-Server.*/i, replacement: 'Omron' },
+    { pattern: /.*McAfee.*/i, replacement: 'McAfee Security' },
+
     { pattern: /.*CX-One.*/i, replacement: 'Omron' },
+    { pattern: /.*CX-Server.*/i, replacement: 'Omron' },
     { pattern: /.*CX Common Tools.*/i, replacement: 'Omron' },
 
+    { pattern: /.*SQL.*/i, replacement: 'MySQL' },
+    { pattern: /.*I\.V\.A\..*/i, replacement: 'I.V.A.' },
+    { pattern: /.*Notepad\+\+.*/i, replacement: 'Notepad++' },
+    { pattern: /.*Macrium.*/i, replacement: 'Macrium Reflect' },
+    { pattern: /.*Malwarebytes.*/i, replacement: 'Malwarebytes' },
+    { pattern: /.*KUKA.*/i, replacement: 'KUKA Engineering Tools' },
+    { pattern: /.*Revo Uninstaller.*/i, replacement: 'Revo Uninstaller' },
+    { pattern: /.*Silicon Laboratories.*/i, replacement: 'Silicon Laboratories' },
+
+    { pattern: /.*CrystalDiskInfo.*/i, replacement: 'CrystalDiskInfo' },
+    { pattern: /.*CrystalDiskMark.*/i, replacement: 'CrystalDiskMark' },
 
     { pattern: /.*Totally Integrated Automation Portal V16.*/i, replacement: 'Siemens TIA Portal V16' },
     { pattern: /.*Totally Integrated Automation Portal V17.*/i, replacement: 'Siemens TIA Portal V17' },
@@ -199,6 +222,8 @@ export const SOFTWARE_FILTERS: SoftwareFiltersConfig = {
 
     { pattern: /.*16.*OPCUA.*/i, replacement: 'Siemens OPCUA V16' },
     { pattern: /.*17.*OPCUA.*/i, replacement: 'Siemens OPCUA V17' },
+    { pattern: /.*OPC.*/i, replacement: 'Siemens OPCUA V16' },
+    { pattern: /.*OPC.*/i, replacement: 'Siemens OPCUA V17' },
 
     { pattern: /.*SCADA.*16.*/i, replacement: 'Siemens SCADA V16' },
     { pattern: /.*SCADA.*17.*/i, replacement: 'Siemens SCADA V17' },

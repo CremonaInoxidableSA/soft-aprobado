@@ -42,14 +42,26 @@ export default function AprobadoPage() {
 
   const loadFilters = async () => {
     try {
-      const equiposRes = await fetch("/api/equipos");
+      const [equiposRes, softwaresRes] = await Promise.all([
+        fetch("/api/equipos"),
+        fetch("/api/softwares"),
+      ]);
+
       const equiposResult = await equiposRes.json();
       const equiposData =
         equiposRes.ok && Array.isArray(equiposResult) ? equiposResult : [];
       setEquipos(equiposData);
+
+      const softwaresResult = await softwaresRes.json();
+      const softwaresData =
+        softwaresRes.ok && Array.isArray(softwaresResult)
+          ? softwaresResult
+          : [];
+      setSoftwares(softwaresData);
     } catch (error) {
-      console.error("Error loading equipos:", error);
+      console.error("Error loading filters:", error);
       setEquipos([]);
+      setSoftwares([]);
     }
   };
 
@@ -68,12 +80,6 @@ export default function AprobadoPage() {
 
       const data = response.ok && Array.isArray(result) ? result : [];
       setData(data);
-
-      // Actualizar lista de software desde los datos cargados
-      const uniqueSoftware = [
-        ...new Set(data.map((item: SoftwareApprovalRecord) => item.software)),
-      ];
-      setSoftwares(uniqueSoftware.map((sw) => ({ software: sw as string })));
     } finally {
       setLoading(false);
     }

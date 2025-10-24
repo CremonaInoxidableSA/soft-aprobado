@@ -1,25 +1,33 @@
 import { NextResponse } from 'next/server';
-import { getApprovedSoftwareCache, getLastExcelRead, isSoftwareApproved } from '@/lib/excel-utils';
+import { 
+  getApprovedSoftwareCache, 
+  getLastExcelRead, 
+  isSoftwareApproved,
+  isSoftwareApprovedForLocation,
+  getApprovedSoftwareHierarchy 
+} from '@/lib/excel-utils';
 
 export async function GET() {
   try {
     const cache = getApprovedSoftwareCache();
     const lastRead = getLastExcelRead();
+    const hierarchy = getApprovedSoftwareHierarchy();
 
-    // Probar algunos softwares comunes
+    // Probar algunos softwares comunes en diferentes ubicaciones
     const testSoftwares = [
-      'Microsoft Office',
-      'Chrome',
-      'AutoCAD',
-      'Kaspersky',
-      'Adobe Reader',
-      'Visual Studio Code'
+      { software: 'Adobe Illustrator', ubicacion: 'Ventas > Marketing' },
+      { software: 'Adobe Photoshop', ubicacion: 'Ventas > Marketing' },
+      { software: 'Adobe Acrobat', ubicacion: 'General' },
+      { software: 'Microsoft Office', ubicacion: 'Ventas' },
+      { software: 'Chrome', ubicacion: 'Ventas > Marketing' },
+      { software: 'AutoCAD', ubicacion: 'IT' }
     ];
 
-    const testResults = testSoftwares.map(software => ({
+    const testResults = testSoftwares.map(({ software, ubicacion }) => ({
       software,
-      aprobado: isSoftwareApproved(software),
-      normalized: software.toLowerCase()
+      ubicacion,
+      aprobado: isSoftwareApprovedForLocation(software, ubicacion),
+      aprobadoSinUbicacion: isSoftwareApproved(software),
     }));
 
     return NextResponse.json({
@@ -27,6 +35,31 @@ export async function GET() {
         length: cache.length,
         lastRead: lastRead?.toISOString() || null,
         hasData: cache.length > 0
+      },
+      hierarchy: {
+        generalCount: hierarchy.general.length,
+        generalSamples: hierarchy.general.slice(0, 10),
+        areasCount: Object.keys(hierarchy.areas).length,
+        areas: Object.fromEntries(
+          Object.entries(hierarchy.areas).map(([area, software]) => [
+            area,
+            {
+              count: (software as string[]).length,
+              samples: (software as string[]).slice(0, 5),
+            },
+          ])
+        ),
+        puestosCount: Object.keys(hierarchy.puestos).length,
+        puestos: Object.fromEntries(
+          Object.entries(hierarchy.puestos).map(([puesto, data]) => [
+            puesto,
+            {
+              area: (data as any).area,
+              count: (data as any).software.length,
+              samples: (data as any).software.slice(0, 5),
+            },
+          ])
+        ),
       },
       approvedSoftware: cache.slice(0, 10), // Primeros 10 elementos
       testResults,

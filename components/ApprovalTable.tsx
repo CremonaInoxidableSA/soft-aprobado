@@ -96,12 +96,14 @@ export default function ApprovalTable({
                 </div>
               </th>
               <th
-                className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                onClick={() => handleSort("aprobado")}
+                className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
                 style={{ width: "20%" }}
               >
                 <div className="flex items-center">
                   <i className="fas fa-shield-check mr-2"></i>
                   Estado
+                  {getSortIcon("aprobado")}
                 </div>
               </th>
             </tr>

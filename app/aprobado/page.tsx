@@ -105,9 +105,27 @@ export default function AprobadoPage() {
   const sortedData = [...data].sort((a, b) => {
     if (!sortColumn) return 0;
 
-    const aVal = a[sortColumn] || "";
-    const bVal = b[sortColumn] || "";
+    const aVal = a[sortColumn];
+    const bVal = b[sortColumn];
 
+    // Manejar undefined/null
+    if (aVal == null && bVal == null) return 0;
+    if (aVal == null) return 1;
+    if (bVal == null) return -1;
+
+    // Manejar booleanos
+    if (typeof aVal === "boolean" && typeof bVal === "boolean") {
+      if (aVal === bVal) return 0;
+      return (aVal ? 1 : 0) > (bVal ? 1 : 0)
+        ? sortDirection === "asc"
+          ? 1
+          : -1
+        : sortDirection === "asc"
+        ? -1
+        : 1;
+    }
+
+    // Manejar strings y números
     if (aVal < bVal) return sortDirection === "asc" ? -1 : 1;
     if (aVal > bVal) return sortDirection === "asc" ? 1 : -1;
     return 0;

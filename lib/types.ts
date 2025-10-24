@@ -47,6 +47,19 @@ export interface StatsData {
   unapproved?: number;
 }
 
+// Tipos para el software aprobado con jerarquía
+export interface ApprovedSoftwareEntry {
+  area: string;
+  puesto: string;
+  software: string;
+}
+
+export interface ApprovedSoftwareHierarchy {
+  general: string[]; // Software aprobado para todos
+  areas: Map<string, string[]>; // Software por área
+  puestos: Map<string, { area: string; software: string[] }>; // Software por puesto específico
+}
+
 export interface LocationData {
   ubicacion: string;
 }

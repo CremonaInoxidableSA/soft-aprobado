@@ -5,6 +5,7 @@ import {
   shouldExcludeSoftware, 
   normalizeSoftwareName,
   isSoftwareApproved,
+  isSoftwareApprovedForLocation,
   readApprovedSoftware,
   getApprovedSoftwareCache
 } from '@/lib/excel-utils';
@@ -62,15 +63,17 @@ export async function GET(request: Request) {
     const [rows] = await pool.execute(query, params);
     let data = rows as SoftwareApprovalRecord[];
     
-    // Filtrar, normalizar y verificar aprobación
+    // Filtrar, normalizar y verificar aprobación con jerarquía de ubicación
     data = data
       .filter(item => !shouldExcludeSoftware(item.software))
       .map(item => {
         const normalizedSoftware = normalizeSoftwareName(item.software);
+        // Usar la nueva función que considera la ubicación y la jerarquía
+        const aprobado = isSoftwareApprovedForLocation(normalizedSoftware, item.ubicacion || '');
         return {
           ...item,
           software: normalizedSoftware,
-          aprobado: isSoftwareApproved(normalizedSoftware),
+          aprobado: aprobado,
         };
       });
     

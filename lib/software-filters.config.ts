@@ -193,10 +193,11 @@ export const SOFTWARE_FILTERS: SoftwareFiltersConfig = {
     { pattern: /.*CX Common Tools.*/i, replacement: 'Omron' },
 
     { pattern: /.*SQL.*/i, replacement: 'MySQL' },
+    { pattern: /.*VLC.*/i, replacement: 'VLC Media Player' },
     { pattern: /.*Notepad\+\+.*/i, replacement: 'Notepad++' },
     { pattern: /.*Macrium.*/i, replacement: 'Macrium Reflect' },
-    { pattern: /.*Libre Office.*/i, replacement: 'Libre Office' },
-    { pattern: /.*Open Office.*/i, replacement: 'Open Office' },
+    { pattern: /.*LibreOffice.*/i, replacement: 'Libre Office' },
+    { pattern: /.*OpenOffice.*/i, replacement: 'Open Office' },
     { pattern: /.*DWG FastView.*/i, replacement: 'DWG FastView' },
     { pattern: /.*Malwarebytes.*/i, replacement: 'Malwarebytes' },
     { pattern: /.*KUKA.*/i, replacement: 'KUKA Engineering Tools' },

@@ -29,7 +29,8 @@ export async function GET() {
       }))
       .filter((item, index, self) => 
         index === self.findIndex(t => t.software === item.software)
-      );
+      )
+      .sort((a, b) => a.software.localeCompare(b.software, 'es', { sensitivity: 'base' }));
     
     return NextResponse.json(filteredData);
   } catch (error) {

@@ -54,6 +54,7 @@ export function shouldExcludeSoftware(name: string): boolean {
 export async function readApprovedSoftware(): Promise<string[]> {
     try {
         console.log('📖 Intentando leer archivo Excel de software aprobado...');
+        console.log(`   Ruta: ${EXCEL_PATH}`);
 
         // Verificar si el archivo existe antes de intentar leerlo
         if (!fs.existsSync(EXCEL_PATH)) {
@@ -75,7 +76,8 @@ export async function readApprovedSoftware(): Promise<string[]> {
             const buffer = await response.arrayBuffer();
             workbook = read(buffer);
         } else {
-            workbook = readFile(EXCEL_PATH);
+            const fileBuffer = fs.readFileSync(EXCEL_PATH);
+            workbook = read(fileBuffer, { type: 'buffer' });
         }
         const sheetName = workbook.SheetNames[0];
         const sheet = workbook.Sheets[sheetName];

@@ -4,8 +4,8 @@ import { useState } from "react";
 import * as XLSX from "xlsx";
 
 interface ExportDropdownProps<RowType> {
-  rows: RowType[]; // filas visibles (página actual)
-  allRows?: RowType[]; // filas filtradas (sin paginar)
+  rows: RowType[];
+  allRows?: RowType[];
   columns: { key: keyof RowType; label: string }[];
 }
 
@@ -29,14 +29,12 @@ export default function ExportDropdown<RowType>({
   const handleExport = () => {
     const dataSource = exportScope === "all" && allRows ? allRows : rows;
 
-    // Map rows to plain objects with only selected columns
     const exportData = (dataSource || []).map((r: RowType) => {
       const out: Record<string, string> = {};
       for (const col of columns) {
         const key = String(col.key);
         if (selectedCols.includes(key)) {
           const rawVal = r[col.key];
-          // Convert different types to string
           const val =
             typeof rawVal === "boolean"
               ? rawVal
@@ -50,18 +48,10 @@ export default function ExportDropdown<RowType>({
     });
 
     const ws = XLSX.utils.json_to_sheet(exportData);
-    // Activar autofiltro para que Excel permita ordenar y filtrar como tabla
-    // ws['!ref'] contiene el rango A1:...; usamos ese rango para el autofilter
     if (ws && ws["!ref"]) {
-      try {
-        ws["!autofilter"] = { ref: ws["!ref"] };
-      } catch (e) {
-        // no crítico si falla
-        console.warn("No se pudo establecer autofilter en la hoja:", e);
-      }
+      ws["!autofilter"] = { ref: ws["!ref"] };
     }
 
-    // Establecer anchos de columna razonables según etiquetas de columnas
     const firstRow = exportData[0] || {};
     const keys = Object.keys(firstRow);
     ws["!cols"] = keys.map((k) => ({

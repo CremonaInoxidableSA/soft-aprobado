@@ -8,14 +8,12 @@ import {
 import { getDbPool } from "@/lib/db";
 
 export async function GET() {
-  // Asegurar que el cache esté inicializado
   if (getApprovedSoftwareCache().length === 0) {
     await readApprovedSoftware();
   }
 
   const hierarchy = getApprovedSoftwareHierarchy();
 
-  // Obtener algunos equipos reales con sus ubicaciones
   const pool = await getDbPool();
   const [equiposRows] = await pool.execute(`
     SELECT DISTINCT 
@@ -29,7 +27,6 @@ export async function GET() {
 
   const equipos = equiposRows as { equipo: string; ubicacion: string }[];
 
-  // Pruebas específicas para Adobe software con ubicaciones reales
   const testSoftware = [
     "Adobe Illustrator CC 2015",
     "Adobe Photoshop CC 2015",
@@ -50,7 +47,6 @@ export async function GET() {
     })),
   );
 
-  // Mostrar toda la jerarquía para debugging
   return NextResponse.json({
     summary: {
       totalEquipos: equipos.length,

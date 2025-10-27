@@ -132,7 +132,7 @@ export const SOFTWARE_FILTERS: SoftwareFiltersConfig = {
     /^myHP$/i,
   ],
 
-  // Patrones para incluir software que empiece con Microsoft
+  // Incluir
   include: [
     /^Microsoft PowerAutomateDesktop/i,
     /^Microsoft PowerPoint 2016/i,
@@ -145,7 +145,7 @@ export const SOFTWARE_FILTERS: SoftwareFiltersConfig = {
     /.*SIMATIC.*16\.0.*/i,
   ],
 
-  // Patrones para normalizar nombres de software
+  // Normalizar
   normalize: [
     {
       pattern:

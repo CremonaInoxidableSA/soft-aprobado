@@ -49,7 +49,6 @@ export async function GET(request: Request) {
   const [rows] = await pool.execute(query, params);
   const data = rows as SoftwareRecord[];
 
-  // Filtrar y normalizar software
   let filteredData = data
     .filter((item) => !shouldExcludeSoftware(item.software))
     .map((item) => ({
@@ -57,12 +56,10 @@ export async function GET(request: Request) {
       software: normalizeSoftwareName(item.software),
     }));
 
-  // Aplicar filtro de software específico
   if (software !== "all") {
     filteredData = filteredData.filter((item) => item.software === software);
   }
 
-  // Aplicar búsqueda en el software normalizado
   if (search) {
     const searchLower = search.toLowerCase();
     filteredData = filteredData.filter(
@@ -74,7 +71,6 @@ export async function GET(request: Request) {
     );
   }
 
-  // Eliminar duplicados por computadora + software
   const uniqueData = Array.from(
     filteredData
       .reduce((map, item) => {

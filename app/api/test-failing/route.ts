@@ -13,7 +13,6 @@ export async function GET() {
 
   const hierarchy = getApprovedSoftwareHierarchy();
 
-  // Casos de prueba que deberían estar aprobados pero no lo están
   const testCases = [
     { ubicacion: "Coordinacion Administracion CR", software: "Alison-Desktop" },
     {
@@ -33,7 +32,6 @@ export async function GET() {
     { ubicacion: "Marketing", software: "Mozilla Firefox" },
   ];
 
-  // Función de normalización (copiada del código)
   function normalizeForComparison(text: string): string {
     return text
       .toLowerCase()
@@ -50,7 +48,6 @@ export async function GET() {
       "_",
     );
 
-    // Buscar coincidencias en puestos
     const puestoMatches = [];
     for (const [puestoKey] of Object.entries(hierarchy.puestos)) {
       const [area, puesto] = puestoKey.split("_");
@@ -64,7 +61,6 @@ export async function GET() {
       }
     }
 
-    // Buscar coincidencias en áreas
     const areaMatches = [];
     for (const [area] of Object.entries(hierarchy.areas)) {
       if (ubicacionNormalized.includes(area)) {
@@ -75,7 +71,6 @@ export async function GET() {
       }
     }
 
-    // Buscar el software en todas las categorías
     const softwareInGeneral = hierarchy.general.includes(software);
     const softwareInAreas = Object.entries(hierarchy.areas)
       .filter(([, sw]) => (sw as string[]).includes(software))

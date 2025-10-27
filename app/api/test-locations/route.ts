@@ -4,7 +4,6 @@ import { getDbPool } from "@/lib/db";
 export async function GET() {
   const pool = await getDbPool();
 
-  // Obtener ubicaciones únicas de GLPI
   const query = `
     SELECT DISTINCT 
       l.completename AS ubicacion,

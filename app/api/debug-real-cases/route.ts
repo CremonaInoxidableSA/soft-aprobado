@@ -13,7 +13,6 @@ export async function GET() {
 
   const hierarchy = getApprovedSoftwareHierarchy();
 
-  // Obtener algunos casos específicos de la base de datos
   const pool = await getDbPool();
   const [rows] = await pool.execute(`
     SELECT 
@@ -43,7 +42,6 @@ export async function GET() {
     software: string;
   }[];
 
-  // Función de normalización
   function normalizeForComparison(text: string): string {
     return text
       .toLowerCase()
@@ -59,7 +57,6 @@ export async function GET() {
       "_",
     );
 
-    // Buscar matches de puesto
     const puestoMatches = [];
     for (const [puestoKey, puestoData] of Object.entries(hierarchy.puestos)) {
       const [area, puesto] = puestoKey.split("_");
@@ -74,7 +71,6 @@ export async function GET() {
       }
     }
 
-    // Buscar matches de área
     const areaMatches = [];
     for (const [area, areaSoftware] of Object.entries(hierarchy.areas)) {
       if (ubicacionNormalized.includes(area)) {

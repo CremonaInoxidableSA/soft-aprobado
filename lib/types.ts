@@ -1,5 +1,3 @@
-// Tipos para el proyecto de inventario de software GLPI
-
 export interface SoftwareRecord {
   computadora: string;
   ubicacion: string;
@@ -47,7 +45,6 @@ export interface StatsData {
   unapproved?: number;
 }
 
-// Tipos para el software aprobado con jerarquía
 export interface ApprovedSoftwareEntry {
   area: string;
   puesto: string;
@@ -55,9 +52,9 @@ export interface ApprovedSoftwareEntry {
 }
 
 export interface ApprovedSoftwareHierarchy {
-  general: string[]; // Software aprobado para todos
-  areas: Map<string, string[]>; // Software por área
-  puestos: Map<string, { area: string; software: string[] }>; // Software por puesto específico
+  general: string[];
+  areas: Map<string, string[]>;
+  puestos: Map<string, { area: string; software: string[] }>;
 }
 
 export interface LocationData {

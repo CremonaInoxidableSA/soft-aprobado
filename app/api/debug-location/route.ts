@@ -4,7 +4,6 @@ import {
   getApprovedSoftwareCache,
 } from "@/lib/excel-utils";
 
-// Función de prueba que simula parseLocation y isSoftwareApprovedForLocation con logs
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const ubicacion = searchParams.get("ubicacion") || "Marketing";
@@ -14,13 +13,11 @@ export async function GET(request: Request) {
     await readApprovedSoftware();
   }
 
-  // Importar las funciones internas para debugging
   const { getApprovedSoftwareHierarchy, isSoftwareApprovedForLocation } =
     await import("@/lib/excel-utils");
 
   const hierarchy = getApprovedSoftwareHierarchy();
 
-  // Normalizar la ubicación como lo hace parseLocation
   function normalizeForComparison(text: string): string {
     return text
       .toLowerCase()
@@ -35,7 +32,6 @@ export async function GET(request: Request) {
     "_",
   );
 
-  // Buscar coincidencias de puesto
   const puestosMatches = [];
   for (const [puestoKey, puestoData] of Object.entries(hierarchy.puestos)) {
     const [area, puesto] = puestoKey.split("_");
@@ -51,7 +47,6 @@ export async function GET(request: Request) {
     }
   }
 
-  // Buscar coincidencias de área
   const areasMatches = [];
   for (const [area, areaSoftware] of Object.entries(hierarchy.areas)) {
     if (ubicacionNormalized.includes(area)) {
@@ -64,7 +59,6 @@ export async function GET(request: Request) {
     }
   }
 
-  // Resultado de la función real
   const aprobado = isSoftwareApprovedForLocation(software, ubicacion);
 
   return NextResponse.json({

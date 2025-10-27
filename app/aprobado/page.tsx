@@ -17,20 +17,17 @@ export default function AprobadoPage() {
   const [loading, setLoading] = useState(true);
   const [totalRecords, setTotalRecords] = useState<number | null>(null);
 
-  // Filtros
   const [search, setSearch] = useState("");
   const [equipoFilter, setEquipoFilter] = useState("all");
   const [estadoFilter, setEstadoFilter] = useState("all");
   const [softwareFilter, setSoftwareFilter] = useState("all");
   const [locationFilter, setLocationFilter] = useState("all");
 
-  // Ordenamiento
   const [sortColumn, setSortColumn] = useState<
     keyof SoftwareApprovalRecord | null
   >("equipo");
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
 
-  // Paginación
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
 
@@ -55,60 +52,41 @@ export default function AprobadoPage() {
     }
   }, [search, equipoFilter, estadoFilter, softwareFilter, locationFilter]);
 
-  // Cargar datos iniciales
   useEffect(() => {
     loadFilters();
   }, []);
 
-  // Cargar datos cuando cambian los filtros
   useEffect(() => {
     loadData();
   }, [loadData]);
 
   const loadFilters = async () => {
-    try {
-      const [equiposRes, softwaresRes, locationsRes] = await Promise.all([
-        fetch("/api/equipos"),
-        fetch("/api/softwares"),
-        fetch("/api/locations"),
-      ]);
+    const [equiposRes, softwaresRes, locationsRes] = await Promise.all([
+      fetch("/api/equipos"),
+      fetch("/api/softwares"),
+      fetch("/api/locations"),
+    ]);
 
-      const equiposResult = await equiposRes.json();
-      const equiposData =
-        equiposRes.ok && Array.isArray(equiposResult) ? equiposResult : [];
-      setEquipos(equiposData);
+    const equiposResult = await equiposRes.json();
+    const equiposData =
+      equiposRes.ok && Array.isArray(equiposResult) ? equiposResult : [];
+    setEquipos(equiposData);
 
-      const softwaresResult = await softwaresRes.json();
-      const softwaresData =
-        softwaresRes.ok && Array.isArray(softwaresResult)
-          ? softwaresResult
-          : [];
-      setSoftwares(softwaresData);
+    const softwaresResult = await softwaresRes.json();
+    const softwaresData =
+      softwaresRes.ok && Array.isArray(softwaresResult) ? softwaresResult : [];
+    setSoftwares(softwaresData);
 
-      const locationsResult = await locationsRes.json();
-      const locationsData =
-        locationsRes.ok && Array.isArray(locationsResult)
-          ? locationsResult
-          : [];
-      setLocations(locationsData);
-      // Cargar total de registros (valor fijo de todos los registros válidos)
-      try {
-        const totalRes = await fetch("/api/software-approval/total");
-        const totalJson = await totalRes.json();
-        if (totalRes.ok && typeof totalJson.total === "number") {
-          setTotalRecords(totalJson.total);
-        } else {
-          setTotalRecords(null);
-        }
-      } catch (e) {
-        console.error("Error fetching total records:", e);
-        setTotalRecords(null);
-      }
-    } catch (error) {
-      console.error("Error loading filters:", error);
-      setEquipos([]);
-      setSoftwares([]);
-      setLocations([]);
+    const locationsResult = await locationsRes.json();
+    const locationsData =
+      locationsRes.ok && Array.isArray(locationsResult) ? locationsResult : [];
+    setLocations(locationsData);
+    const totalRes = await fetch("/api/software-approval/total");
+    const totalJson = await totalRes.json();
+    if (totalRes.ok && typeof totalJson.total === "number") {
+      setTotalRecords(totalJson.total);
+    } else {
+      setTotalRecords(null);
     }
   };
 
@@ -129,19 +107,16 @@ export default function AprobadoPage() {
     setLocationFilter("all");
   };
 
-  // Ordenar datos
   const sortedData = [...data].sort((a, b) => {
     if (!sortColumn) return 0;
 
     const aVal = a[sortColumn];
     const bVal = b[sortColumn];
 
-    // Manejar undefined/null
     if (aVal == null && bVal == null) return 0;
     if (aVal == null) return 1;
     if (bVal == null) return -1;
 
-    // Manejar booleanos
     if (typeof aVal === "boolean" && typeof bVal === "boolean") {
       if (aVal === bVal) return 0;
       return (aVal ? 1 : 0) > (bVal ? 1 : 0)
@@ -153,24 +128,20 @@ export default function AprobadoPage() {
           : 1;
     }
 
-    // Manejar strings y números
     if (aVal < bVal) return sortDirection === "asc" ? -1 : 1;
     if (aVal > bVal) return sortDirection === "asc" ? 1 : -1;
     return 0;
   });
 
-  // Paginación
   const totalPages = Math.ceil(sortedData.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
   const paginatedData = sortedData.slice(startIndex, endIndex);
 
-  // Resetear página cuando cambian los filtros
   useEffect(() => {
     setCurrentPage(1);
   }, [search, equipoFilter, estadoFilter, softwareFilter, locationFilter]);
 
-  // Calcular estadísticas
   const approvedCount = data.filter((item) => item.aprobado).length;
   const unapprovedCount = data.length - approvedCount;
 
@@ -329,7 +300,7 @@ export default function AprobadoPage() {
                     value={itemsPerPage}
                     onChange={(e) => {
                       setItemsPerPage(Number(e.target.value));
-                      setCurrentPage(1); // Reset to first page when changing items per page
+                      setCurrentPage(1);
                     }}
                     className="px-2 py-1 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
                   >

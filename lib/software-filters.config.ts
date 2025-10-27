@@ -15,6 +15,8 @@ export const SOFTWARE_FILTERS: SoftwareFiltersConfig = {
     /^MSXML \d+/i,
     /^mspaint-/,
     /^mstsc-/,
+    /^NetmanageServer/i,
+    /^Open ModScan/i,
     /^Paquete /,
     /^Realtek High Definition Audio/i,
     /^Security Update for/i,
@@ -59,6 +61,7 @@ export const SOFTWARE_FILTERS: SoftwareFiltersConfig = {
     /.*Click-to-Run.*/i,
     /.*Cortana.*/i,
     /.*Dolby.*/i,
+    /.*Driver.*/i,
     /.*Edge.*/i,
     /.*EPLAN License.*/i,
     /.*Fingerprint.*/i,
@@ -197,11 +200,15 @@ export const SOFTWARE_FILTERS: SoftwareFiltersConfig = {
     { pattern: /.*CX Common Tools.*/i, replacement: 'Omron' },
 
     { pattern: /.*SQL.*/i, replacement: 'MySQL' },
+    { pattern: /.*EPLAN.*/i, replacement: 'EPLAN' },
+    { pattern: /.*Logi.*/i, replacement: 'Logi Options+' },
     { pattern: /.*VLC.*/i, replacement: 'VLC Media Player' },
     { pattern: /.*Notepad\+\+.*/i, replacement: 'Notepad++' },
+    { pattern: /.*OpenOffice.*/i, replacement: 'OpenOffice' },
     { pattern: /.*Macrium.*/i, replacement: 'Macrium Reflect' },
     { pattern: /.*LibreOffice.*/i, replacement: 'LibreOffice' },
-    { pattern: /.*OpenOffice.*/i, replacement: 'OpenOffice' },
+    { pattern: /.*DobotStudio.*/i, replacement: 'DobotStudio' },
+    { pattern: /.*LOGO!.*/i, replacement: 'LOGO! Soft Comfort' },
     { pattern: /.*DWG FastView.*/i, replacement: 'DWG FastView' },
     { pattern: /.*Malwarebytes.*/i, replacement: 'Malwarebytes' },
     { pattern: /.*KUKA.*/i, replacement: 'KUKA Engineering Tools' },
@@ -232,5 +239,9 @@ export const SOFTWARE_FILTERS: SoftwareFiltersConfig = {
 
     { pattern: /.*SCADA.*16.*/i, replacement: 'Siemens SCADA V16' },
     { pattern: /.*SCADA.*17.*/i, replacement: 'Siemens SCADA V17' },
+
+    { pattern: /.*DOPSOFT.*/i, replacement: 'ISPSoft' },
+    { pattern: /.*DCISOFT.*/i, replacement: 'ISPSoft' },
+    { pattern: /.*ISPSoft.*/i, replacement: 'ISPSoft' }
   ]
 };

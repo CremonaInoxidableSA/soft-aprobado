@@ -13,10 +13,11 @@ import {
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
-    const search = searchParams.get('search') || '';
-    const equipo = searchParams.get('equipo') || 'all';
-    const estado = searchParams.get('estado') || 'all';
-    const software = searchParams.get('software') || 'all';
+  const search = searchParams.get('search') || '';
+  const equipo = searchParams.get('equipo') || 'all';
+  const estado = searchParams.get('estado') || 'all';
+  const software = searchParams.get('software') || 'all';
+  const ubicacion = searchParams.get('ubicacion') || 'all';
 
     // Inicializar cache de software aprobado si está vacío
     if (getApprovedSoftwareCache().length === 0) {
@@ -56,6 +57,10 @@ export async function GET(request: Request) {
     if (equipo !== 'all') {
       query += ' AND c.name = ?';
       params.push(equipo);
+    }
+    if (ubicacion !== 'all') {
+      query += ' AND l.completename = ?';
+      params.push(ubicacion);
     }
     
     query += ' ORDER BY l.completename, c.name, s.name';

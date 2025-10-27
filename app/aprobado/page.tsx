@@ -5,6 +5,7 @@ import { SoftwareApprovalRecord, EquipoData, SoftwareData } from "@/lib/types";
 import ApprovalTable from "@/components/ApprovalTable";
 import SearchBox from "@/components/SearchBox";
 import FilterSelect from "@/components/FilterSelect";
+import ExportDropdown from "@/components/ExportDropdown";
 import StatsCard from "@/components/StatsCard";
 import LoadingSpinner from "@/components/LoadingSpinner";
 
@@ -12,6 +13,7 @@ export default function AprobadoPage() {
   const [data, setData] = useState<SoftwareApprovalRecord[]>([]);
   const [equipos, setEquipos] = useState<EquipoData[]>([]);
   const [softwares, setSoftwares] = useState<SoftwareData[]>([]);
+  const [locations, setLocations] = useState<{ ubicacion: string }[]>([]);
   const [loading, setLoading] = useState(true);
 
   // Filtros
@@ -19,6 +21,7 @@ export default function AprobadoPage() {
   const [equipoFilter, setEquipoFilter] = useState("all");
   const [estadoFilter, setEstadoFilter] = useState("all");
   const [softwareFilter, setSoftwareFilter] = useState("all");
+  const [locationFilter, setLocationFilter] = useState("all");
 
   // Ordenamiento
   const [sortColumn, setSortColumn] = useState<
@@ -38,13 +41,14 @@ export default function AprobadoPage() {
   // Cargar datos cuando cambian los filtros
   useEffect(() => {
     loadData();
-  }, [search, equipoFilter, estadoFilter, softwareFilter]);
+  }, [search, equipoFilter, estadoFilter, softwareFilter, locationFilter]);
 
   const loadFilters = async () => {
     try {
-      const [equiposRes, softwaresRes] = await Promise.all([
+      const [equiposRes, softwaresRes, locationsRes] = await Promise.all([
         fetch("/api/equipos"),
         fetch("/api/softwares"),
+        fetch("/api/locations"),
       ]);
 
       const equiposResult = await equiposRes.json();
@@ -58,10 +62,18 @@ export default function AprobadoPage() {
           ? softwaresResult
           : [];
       setSoftwares(softwaresData);
+
+      const locationsResult = await locationsRes.json();
+      const locationsData =
+        locationsRes.ok && Array.isArray(locationsResult)
+          ? locationsResult
+          : [];
+      setLocations(locationsData);
     } catch (error) {
       console.error("Error loading filters:", error);
       setEquipos([]);
       setSoftwares([]);
+      setLocations([]);
     }
   };
 
@@ -73,6 +85,7 @@ export default function AprobadoPage() {
         equipo: equipoFilter,
         estado: estadoFilter,
         software: softwareFilter,
+        ubicacion: locationFilter,
       });
 
       const response = await fetch(`/api/software-approval?${params}`);
@@ -99,6 +112,7 @@ export default function AprobadoPage() {
     setEquipoFilter("all");
     setEstadoFilter("all");
     setSoftwareFilter("all");
+    setLocationFilter("all");
   };
 
   // Ordenar datos
@@ -140,11 +154,19 @@ export default function AprobadoPage() {
   // Resetear página cuando cambian los filtros
   useEffect(() => {
     setCurrentPage(1);
-  }, [search, equipoFilter, estadoFilter, softwareFilter]);
+  }, [search, equipoFilter, estadoFilter, softwareFilter, locationFilter]);
 
   // Calcular estadísticas
   const approvedCount = data.filter((item) => item.aprobado).length;
   const unapprovedCount = data.length - approvedCount;
+
+  const exportColumns = [
+    { key: "equipo", label: "Equipo" },
+    { key: "ubicacion", label: "Ubicación" },
+    { key: "software", label: "Software" },
+    { key: "version", label: "Versión" },
+    { key: "aprobado", label: "Estado" },
+  ] as const;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 to-red-700 p-5">
@@ -175,7 +197,7 @@ export default function AprobadoPage() {
             </div>
 
             {/* Filters */}
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4 items-end text-black">
+            <div className="grid grid-cols-1 md:grid-cols-5 gap-4 items-end text-black">
               <FilterSelect
                 id="equipoFilter"
                 label="Equipo"
@@ -192,15 +214,17 @@ export default function AprobadoPage() {
               />
 
               <FilterSelect
-                id="estadoFilter"
-                label="Estado"
-                icon="fas fa-shield-check"
-                value={estadoFilter}
-                onChange={setEstadoFilter}
+                id="locationFilter"
+                label="Ubicación"
+                icon="fas fa-map-marker-alt"
+                value={locationFilter}
+                onChange={setLocationFilter}
                 options={[
-                  { value: "all", label: "Todos" },
-                  { value: "aprobado", label: "Aprobados" },
-                  { value: "desaprobado", label: "No Aprobados" },
+                  { value: "all", label: "Todas las ubicaciones" },
+                  ...locations.map((l) => ({
+                    value: l.ubicacion,
+                    label: l.ubicacion,
+                  })),
                 ]}
               />
 
@@ -216,6 +240,19 @@ export default function AprobadoPage() {
                     value: sw.software,
                     label: sw.software,
                   })),
+                ]}
+              />
+
+              <FilterSelect
+                id="estadoFilter"
+                label="Estado"
+                icon="fas fa-shield-check"
+                value={estadoFilter}
+                onChange={setEstadoFilter}
+                options={[
+                  { value: "all", label: "Todos" },
+                  { value: "aprobado", label: "Aprobados" },
+                  { value: "desaprobado", label: "No Aprobados" },
                 ]}
               />
 
@@ -291,6 +328,11 @@ export default function AprobadoPage() {
                 </div>
               </div>
               <div className="flex items-center space-x-2">
+                <ExportDropdown
+                  rows={paginatedData}
+                  allRows={sortedData}
+                  columns={exportColumns as any}
+                />
                 <button
                   onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
                   disabled={currentPage === 1}

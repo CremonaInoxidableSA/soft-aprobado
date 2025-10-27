@@ -1,11 +1,15 @@
-import { NextResponse } from 'next/server';
-import { getApprovedSoftwareCache, getLastExcelRead, getApprovedSoftwareHierarchy } from '@/lib/excel-utils';
+import { NextResponse } from "next/server";
+import {
+  getApprovedSoftwareCache,
+  getLastExcelRead,
+  getApprovedSoftwareHierarchy,
+} from "@/lib/excel-utils";
 
 export async function GET() {
   const approvedList = getApprovedSoftwareCache();
   const lastRead = getLastExcelRead();
   const hierarchy = getApprovedSoftwareHierarchy();
-  
+
   return NextResponse.json({
     software: approvedList,
     count: approvedList.length,

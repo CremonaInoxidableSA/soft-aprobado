@@ -1,11 +1,11 @@
-import { NextResponse } from 'next/server';
-import { 
-  getApprovedSoftwareCache, 
-  getLastExcelRead, 
+import { NextResponse } from "next/server";
+import {
+  getApprovedSoftwareCache,
+  getLastExcelRead,
   isSoftwareApproved,
   isSoftwareApprovedForLocation,
-  getApprovedSoftwareHierarchy 
-} from '@/lib/excel-utils';
+  getApprovedSoftwareHierarchy,
+} from "@/lib/excel-utils";
 
 export async function GET() {
   try {
@@ -15,12 +15,12 @@ export async function GET() {
 
     // Probar algunos softwares comunes en diferentes ubicaciones
     const testSoftwares = [
-      { software: 'Adobe Illustrator', ubicacion: 'Ventas > Marketing' },
-      { software: 'Adobe Photoshop', ubicacion: 'Ventas > Marketing' },
-      { software: 'Adobe Acrobat', ubicacion: 'General' },
-      { software: 'Microsoft Office', ubicacion: 'Ventas' },
-      { software: 'Chrome', ubicacion: 'Ventas > Marketing' },
-      { software: 'AutoCAD', ubicacion: 'IT' }
+      { software: "Adobe Illustrator", ubicacion: "Ventas > Marketing" },
+      { software: "Adobe Photoshop", ubicacion: "Ventas > Marketing" },
+      { software: "Adobe Acrobat", ubicacion: "General" },
+      { software: "Microsoft Office", ubicacion: "Ventas" },
+      { software: "Chrome", ubicacion: "Ventas > Marketing" },
+      { software: "AutoCAD", ubicacion: "IT" },
     ];
 
     const testResults = testSoftwares.map(({ software, ubicacion }) => ({
@@ -34,7 +34,7 @@ export async function GET() {
       cacheStatus: {
         length: cache.length,
         lastRead: lastRead?.toISOString() || null,
-        hasData: cache.length > 0
+        hasData: cache.length > 0,
       },
       hierarchy: {
         generalCount: hierarchy.general.length,
@@ -47,29 +47,29 @@ export async function GET() {
               count: (software as string[]).length,
               samples: (software as string[]).slice(0, 5),
             },
-          ])
+          ]),
         ),
         puestosCount: Object.keys(hierarchy.puestos).length,
         puestos: Object.fromEntries(
           Object.entries(hierarchy.puestos).map(([puesto, data]) => [
             puesto,
             {
-              area: (data as any).area,
-              count: (data as any).software.length,
-              samples: (data as any).software.slice(0, 5),
+              area: data.area as string,
+              count: (data.software as string[]).length,
+              samples: (data.software as string[]).slice(0, 5),
             },
-          ])
+          ]),
         ),
       },
       approvedSoftware: cache.slice(0, 10), // Primeros 10 elementos
       testResults,
-      allApproved: cache
+      allApproved: cache,
     });
   } catch (error) {
-    console.error('Error in diagnostic endpoint:', error);
+    console.error("Error in diagnostic endpoint:", error);
     return NextResponse.json(
-      { error: 'Error interno del servidor' },
-      { status: 500 }
+      { error: "Error interno del servidor" },
+      { status: 500 },
     );
   }
 }

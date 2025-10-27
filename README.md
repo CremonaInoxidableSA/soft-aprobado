@@ -14,7 +14,7 @@ Sistema de inventario y control de software aprobado para GLPI, migrado a Next.j
 
 ## 📋 Requisitos Previos
 
-- Node.js 18+ 
+- Node.js 18+
 - npm o yarn
 - Acceso a base de datos GLPI (MariaDB/MySQL)
 - Acceso al archivo Excel de software aprobado

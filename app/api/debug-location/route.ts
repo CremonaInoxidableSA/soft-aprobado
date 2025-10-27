@@ -1,52 +1,56 @@
-import { NextResponse } from 'next/server';
-import { 
+import { NextResponse } from "next/server";
+import {
   readApprovedSoftware,
-  getApprovedSoftwareCache
-} from '@/lib/excel-utils';
+  getApprovedSoftwareCache,
+} from "@/lib/excel-utils";
 
 // Función de prueba que simula parseLocation y isSoftwareApprovedForLocation con logs
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
-  const ubicacion = searchParams.get('ubicacion') || 'Marketing';
-  const software = searchParams.get('software') || 'Adobe Illustrator CC 2015';
-  
+  const ubicacion = searchParams.get("ubicacion") || "Marketing";
+  const software = searchParams.get("software") || "Adobe Illustrator CC 2015";
+
   if (getApprovedSoftwareCache().length === 0) {
     await readApprovedSoftware();
   }
 
   // Importar las funciones internas para debugging
-  const { getApprovedSoftwareHierarchy, isSoftwareApprovedForLocation } = await import('@/lib/excel-utils');
-  
+  const { getApprovedSoftwareHierarchy, isSoftwareApprovedForLocation } =
+    await import("@/lib/excel-utils");
+
   const hierarchy = getApprovedSoftwareHierarchy();
-  
+
   // Normalizar la ubicación como lo hace parseLocation
   function normalizeForComparison(text: string): string {
     return text
       .toLowerCase()
-      .normalize('NFD')
-      .replace(/[\u0300-\u036f]/g, '')
-      .replace(/\s+/g, ' ')
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .replace(/\s+/g, " ")
       .trim();
   }
-  
-  const ubicacionNormalized = normalizeForComparison(ubicacion).replace(/\s+/g, '_');
-  
+
+  const ubicacionNormalized = normalizeForComparison(ubicacion).replace(
+    /\s+/g,
+    "_",
+  );
+
   // Buscar coincidencias de puesto
   const puestosMatches = [];
   for (const [puestoKey, puestoData] of Object.entries(hierarchy.puestos)) {
-    const [area, puesto] = puestoKey.split('_');
+    const [area, puesto] = puestoKey.split("_");
     if (ubicacionNormalized.includes(puesto)) {
       puestosMatches.push({
         puestoKey,
         area,
         puesto,
         puestoLength: puesto.length,
-        softwareCount: (puestoData as any).software.length,
-        software: (puestoData as any).software,
+        softwareCount: (puestoData as { software: string[] }).software.length,
+        software: (puestoData as { software: string[] }).software,
       });
     }
   }
-  
+
   // Buscar coincidencias de área
   const areasMatches = [];
   for (const [area, areaSoftware] of Object.entries(hierarchy.areas)) {
@@ -54,15 +58,15 @@ export async function GET(request: Request) {
       areasMatches.push({
         area,
         areaLength: area.length,
-        softwareCount: (areaSoftware as any).length,
+        softwareCount: (areaSoftware as string[]).length,
         software: areaSoftware,
       });
     }
   }
-  
+
   // Resultado de la función real
   const aprobado = isSoftwareApprovedForLocation(software, ubicacion);
-  
+
   return NextResponse.json({
     input: {
       ubicacion,

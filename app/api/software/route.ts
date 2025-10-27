@@ -1,16 +1,19 @@
-import { NextResponse } from 'next/server';
-import { getDbPool } from '@/lib/db';
-import { SoftwareRecord } from '@/lib/types';
-import { shouldExcludeSoftware, normalizeSoftwareName } from '@/lib/excel-utils';
+import { NextResponse } from "next/server";
+import { getDbPool } from "@/lib/db";
+import { SoftwareRecord } from "@/lib/types";
+import {
+  shouldExcludeSoftware,
+  normalizeSoftwareName,
+} from "@/lib/excel-utils";
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
-  const search = searchParams.get('search') || '';
-  const location = searchParams.get('location') || 'all';
-  const software = searchParams.get('software') || 'all';
+  const search = searchParams.get("search") || "";
+  const location = searchParams.get("location") || "all";
+  const software = searchParams.get("software") || "all";
 
   const pool = await getDbPool();
-  
+
   let query = `
     SELECT 
       c.name AS computadora,
@@ -33,54 +36,56 @@ export async function GET(request: Request) {
     WHERE c.is_deleted = 0 AND c.is_template = 0
         AND (sc.name IS NULL OR sc.name NOT IN ('system', 'update', 'system_update'))
   `;
-  
+
   const params: string[] = [];
-  
-  if (location !== 'all') {
-    query += ' AND l.completename = ?';
+
+  if (location !== "all") {
+    query += " AND l.completename = ?";
     params.push(location);
   }
-  
-  query += ' ORDER BY l.completename, c.name, s.name';
-  
+
+  query += " ORDER BY l.completename, c.name, s.name";
+
   const [rows] = await pool.execute(query, params);
   const data = rows as SoftwareRecord[];
-  
+
   // Filtrar y normalizar software
   let filteredData = data
-    .filter(item => !shouldExcludeSoftware(item.software))
-    .map(item => ({
+    .filter((item) => !shouldExcludeSoftware(item.software))
+    .map((item) => ({
       ...item,
       software: normalizeSoftwareName(item.software),
     }));
-  
+
   // Aplicar filtro de software específico
-  if (software !== 'all') {
-    filteredData = filteredData.filter(item => item.software === software);
+  if (software !== "all") {
+    filteredData = filteredData.filter((item) => item.software === software);
   }
-  
+
   // Aplicar búsqueda en el software normalizado
   if (search) {
     const searchLower = search.toLowerCase();
-    filteredData = filteredData.filter(item =>
-      item.computadora.toLowerCase().includes(searchLower) ||
-      item.ubicacion?.toLowerCase().includes(searchLower) ||
-      item.software.toLowerCase().includes(searchLower) ||
-      item.version.toLowerCase().includes(searchLower)
+    filteredData = filteredData.filter(
+      (item) =>
+        item.computadora.toLowerCase().includes(searchLower) ||
+        item.ubicacion?.toLowerCase().includes(searchLower) ||
+        item.software.toLowerCase().includes(searchLower) ||
+        item.version.toLowerCase().includes(searchLower),
     );
   }
-  
+
   // Eliminar duplicados por computadora + software
   const uniqueData = Array.from(
-    filteredData.reduce((map, item) => {
-      const key = `${item.computadora}-${item.software}`;
-      if (!map.has(key)) {
-        map.set(key, item);
-      }
-      return map;
-    }, new Map<string, SoftwareRecord>())
-    .values()
+    filteredData
+      .reduce((map, item) => {
+        const key = `${item.computadora}-${item.software}`;
+        if (!map.has(key)) {
+          map.set(key, item);
+        }
+        return map;
+      }, new Map<string, SoftwareRecord>())
+      .values(),
   );
-  
+
   return NextResponse.json(uniqueData);
 }

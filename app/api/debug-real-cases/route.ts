@@ -1,10 +1,10 @@
-import { NextResponse } from 'next/server';
-import { 
+import { NextResponse } from "next/server";
+import {
   readApprovedSoftware,
   getApprovedSoftwareCache,
-  getApprovedSoftwareHierarchy
-} from '@/lib/excel-utils';
-import { getDbPool } from '@/lib/db';
+  getApprovedSoftwareHierarchy,
+} from "@/lib/excel-utils";
+import { getDbPool } from "@/lib/db";
 
 export async function GET() {
   if (getApprovedSoftwareCache().length === 0) {
@@ -12,7 +12,7 @@ export async function GET() {
   }
 
   const hierarchy = getApprovedSoftwareHierarchy();
-  
+
   // Obtener algunos casos específicos de la base de datos
   const pool = await getDbPool();
   const [rows] = await pool.execute(`
@@ -36,37 +36,44 @@ export async function GET() {
       )
     LIMIT 20
   `);
-  
-  const realCases = rows as { equipo: string; ubicacion: string; software: string }[];
-  
+
+  const realCases = rows as {
+    equipo: string;
+    ubicacion: string;
+    software: string;
+  }[];
+
   // Función de normalización
   function normalizeForComparison(text: string): string {
     return text
       .toLowerCase()
-      .normalize('NFD')
-      .replace(/[\u0300-\u036f]/g, '')
-      .replace(/\s+/g, ' ')
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .replace(/\s+/g, " ")
       .trim();
   }
-  
+
   const debugResults = realCases.map(({ equipo, ubicacion, software }) => {
-    const ubicacionNormalized = normalizeForComparison(ubicacion || '').replace(/\s+/g, '_');
-    
+    const ubicacionNormalized = normalizeForComparison(ubicacion || "").replace(
+      /\s+/g,
+      "_",
+    );
+
     // Buscar matches de puesto
     const puestoMatches = [];
     for (const [puestoKey, puestoData] of Object.entries(hierarchy.puestos)) {
-      const [area, puesto] = puestoKey.split('_');
+      const [area, puesto] = puestoKey.split("_");
       if (ubicacionNormalized.includes(puesto)) {
         puestoMatches.push({
           puestoKey,
           area,
           puesto,
           matches: ubicacionNormalized.includes(puesto),
-          softwareList: (puestoData as any).software,
+          softwareList: (puestoData as { software: string[] }).software,
         });
       }
     }
-    
+
     // Buscar matches de área
     const areaMatches = [];
     for (const [area, areaSoftware] of Object.entries(hierarchy.areas)) {
@@ -78,7 +85,7 @@ export async function GET() {
         });
       }
     }
-    
+
     return {
       equipo,
       ubicacion,
@@ -87,14 +94,15 @@ export async function GET() {
       debug: {
         puestoMatches,
         areaMatches,
-        inGeneral: hierarchy.general.some(s => 
-          s.toLowerCase().includes(software.toLowerCase()) || 
-          software.toLowerCase().includes(s.toLowerCase())
+        inGeneral: hierarchy.general.some(
+          (s) =>
+            s.toLowerCase().includes(software.toLowerCase()) ||
+            software.toLowerCase().includes(s.toLowerCase()),
         ),
       },
     };
   });
-  
+
   return NextResponse.json({
     realCasesFromDB: debugResults,
     hierarchyKeys: {

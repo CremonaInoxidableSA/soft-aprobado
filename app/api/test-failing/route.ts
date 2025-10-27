@@ -1,10 +1,10 @@
-import { NextResponse } from 'next/server';
-import { 
+import { NextResponse } from "next/server";
+import {
   readApprovedSoftware,
   getApprovedSoftwareCache,
   isSoftwareApprovedForLocation,
-  getApprovedSoftwareHierarchy
-} from '@/lib/excel-utils';
+  getApprovedSoftwareHierarchy,
+} from "@/lib/excel-utils";
 
 export async function GET() {
   if (getApprovedSoftwareCache().length === 0) {
@@ -12,39 +12,48 @@ export async function GET() {
   }
 
   const hierarchy = getApprovedSoftwareHierarchy();
-  
+
   // Casos de prueba que deberían estar aprobados pero no lo están
   const testCases = [
-    { ubicacion: 'Coordinacion Administracion CR', software: 'Alison-Desktop' },
-    { ubicacion: 'Coordinacion Electronica', software: 'Autodesk AutoCAD 2022' },
-    { ubicacion: 'Coordinacion Ventas', software: 'Autodesk AutoCAD 2022' },
-    { ubicacion: 'Coordinacion Administracion CR', software: 'Dropbox' },
-    { ubicacion: 'Coordinacion Mecanica', software: 'Dropbox' },
-    { ubicacion: 'Coordinacion Mecanica', software: 'Foxit PDF' },
-    { ubicacion: 'Coordinacion Mecanica', software: 'Krita' },
-    { ubicacion: 'Administracion Antonativa', software: 'Mozilla Firefox' },
-    { ubicacion: 'Coordinacion Administracion CR', software: 'Mozilla Firefox' },
-    { ubicacion: 'Marketing', software: 'Mozilla Firefox' },
+    { ubicacion: "Coordinacion Administracion CR", software: "Alison-Desktop" },
+    {
+      ubicacion: "Coordinacion Electronica",
+      software: "Autodesk AutoCAD 2022",
+    },
+    { ubicacion: "Coordinacion Ventas", software: "Autodesk AutoCAD 2022" },
+    { ubicacion: "Coordinacion Administracion CR", software: "Dropbox" },
+    { ubicacion: "Coordinacion Mecanica", software: "Dropbox" },
+    { ubicacion: "Coordinacion Mecanica", software: "Foxit PDF" },
+    { ubicacion: "Coordinacion Mecanica", software: "Krita" },
+    { ubicacion: "Administracion Antonativa", software: "Mozilla Firefox" },
+    {
+      ubicacion: "Coordinacion Administracion CR",
+      software: "Mozilla Firefox",
+    },
+    { ubicacion: "Marketing", software: "Mozilla Firefox" },
   ];
-  
+
   // Función de normalización (copiada del código)
   function normalizeForComparison(text: string): string {
     return text
       .toLowerCase()
-      .normalize('NFD')
-      .replace(/[\u0300-\u036f]/g, '')
-      .replace(/\s+/g, ' ')
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .replace(/\s+/g, " ")
       .trim();
   }
-  
+
   const results = testCases.map(({ ubicacion, software }) => {
     const aprobado = isSoftwareApprovedForLocation(software, ubicacion);
-    const ubicacionNormalized = normalizeForComparison(ubicacion).replace(/\s+/g, '_');
-    
+    const ubicacionNormalized = normalizeForComparison(ubicacion).replace(
+      /\s+/g,
+      "_",
+    );
+
     // Buscar coincidencias en puestos
     const puestoMatches = [];
-    for (const [puestoKey, puestoData] of Object.entries(hierarchy.puestos)) {
-      const [area, puesto] = puestoKey.split('_');
+    for (const [puestoKey] of Object.entries(hierarchy.puestos)) {
+      const [area, puesto] = puestoKey.split("_");
       if (ubicacionNormalized.includes(puesto)) {
         puestoMatches.push({
           puestoKey,
@@ -54,7 +63,7 @@ export async function GET() {
         });
       }
     }
-    
+
     // Buscar coincidencias en áreas
     const areaMatches = [];
     for (const [area] of Object.entries(hierarchy.areas)) {
@@ -65,16 +74,18 @@ export async function GET() {
         });
       }
     }
-    
+
     // Buscar el software en todas las categorías
     const softwareInGeneral = hierarchy.general.includes(software);
     const softwareInAreas = Object.entries(hierarchy.areas)
-      .filter(([_, sw]) => (sw as string[]).includes(software))
-      .map(([area, _]) => area);
+      .filter(([, sw]) => (sw as string[]).includes(software))
+      .map(([area]) => area);
     const softwareInPuestos = Object.entries(hierarchy.puestos)
-      .filter(([_, data]) => (data as any).software.includes(software))
-      .map(([puesto, _]) => puesto);
-    
+      .filter(([, data]) =>
+        (data as { software: string[] }).software.includes(software),
+      )
+      .map(([puesto]) => puesto);
+
     return {
       ubicacion,
       software,
@@ -91,12 +102,12 @@ export async function GET() {
       },
     };
   });
-  
+
   return NextResponse.json({
     summary: {
       total: results.length,
-      aprobados: results.filter(r => r.aprobado).length,
-      desaprobados: results.filter(r => !r.aprobado).length,
+      aprobados: results.filter((r) => r.aprobado).length,
+      desaprobados: results.filter((r) => !r.aprobado).length,
     },
     results,
     hierarchy: {

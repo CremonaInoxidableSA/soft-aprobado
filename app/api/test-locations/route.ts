@@ -1,9 +1,9 @@
-import { NextResponse } from 'next/server';
-import { getDbPool } from '@/lib/db';
+import { NextResponse } from "next/server";
+import { getDbPool } from "@/lib/db";
 
 export async function GET() {
   const pool = await getDbPool();
-  
+
   // Obtener ubicaciones únicas de GLPI
   const query = `
     SELECT DISTINCT 
@@ -15,11 +15,11 @@ export async function GET() {
     GROUP BY l.completename
     ORDER BY l.completename
   `;
-  
+
   const [rows] = await pool.execute(query);
-  
+
   return NextResponse.json({
     ubicaciones: rows,
-    total: (rows as any[]).length,
+    total: (rows as { ubicacion: string; count: number }[]).length,
   });
 }

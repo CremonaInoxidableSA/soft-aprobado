@@ -1,9 +1,9 @@
-import { NextResponse } from 'next/server';
-import { 
+import { NextResponse } from "next/server";
+import {
   getApprovedSoftwareHierarchy,
   readApprovedSoftware,
-  getApprovedSoftwareCache
-} from '@/lib/excel-utils';
+  getApprovedSoftwareCache,
+} from "@/lib/excel-utils";
 
 export async function GET() {
   if (getApprovedSoftwareCache().length === 0) {
@@ -11,7 +11,7 @@ export async function GET() {
   }
 
   const hierarchy = getApprovedSoftwareHierarchy();
-  
+
   return NextResponse.json({
     areasKeys: Object.keys(hierarchy.areas),
     puestosKeys: Object.keys(hierarchy.puestos),
@@ -19,11 +19,11 @@ export async function GET() {
       Object.entries(hierarchy.puestos).map(([key, data]) => [
         key,
         {
-          area: (data as any).area,
-          softwareCount: (data as any).software.length,
-          softwareSamples: (data as any).software.slice(0, 3),
+          area: data.area as string,
+          softwareCount: (data.software as string[]).length,
+          softwareSamples: (data.software as string[]).slice(0, 3),
         },
-      ])
+      ]),
     ),
   });
 }

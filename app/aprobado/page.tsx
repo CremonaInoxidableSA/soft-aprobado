@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { SoftwareApprovalRecord, EquipoData, SoftwareData } from "@/lib/types";
 import ApprovalTable from "@/components/ApprovalTable";
 import SearchBox from "@/components/SearchBox";
@@ -15,6 +15,7 @@ export default function AprobadoPage() {
   const [softwares, setSoftwares] = useState<SoftwareData[]>([]);
   const [locations, setLocations] = useState<{ ubicacion: string }[]>([]);
   const [loading, setLoading] = useState(true);
+  const [totalRecords, setTotalRecords] = useState<number | null>(null);
 
   // Filtros
   const [search, setSearch] = useState("");
@@ -33,6 +34,27 @@ export default function AprobadoPage() {
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
 
+  const loadData = useCallback(async () => {
+    setLoading(true);
+    try {
+      const params = new URLSearchParams({
+        search,
+        equipo: equipoFilter,
+        estado: estadoFilter,
+        software: softwareFilter,
+        ubicacion: locationFilter,
+      });
+
+      const response = await fetch(`/api/software-approval?${params}`);
+      const result = await response.json();
+
+      const data = response.ok && Array.isArray(result) ? result : [];
+      setData(data);
+    } finally {
+      setLoading(false);
+    }
+  }, [search, equipoFilter, estadoFilter, softwareFilter, locationFilter]);
+
   // Cargar datos iniciales
   useEffect(() => {
     loadFilters();
@@ -41,7 +63,7 @@ export default function AprobadoPage() {
   // Cargar datos cuando cambian los filtros
   useEffect(() => {
     loadData();
-  }, [search, equipoFilter, estadoFilter, softwareFilter, locationFilter]);
+  }, [loadData]);
 
   const loadFilters = async () => {
     try {
@@ -69,32 +91,24 @@ export default function AprobadoPage() {
           ? locationsResult
           : [];
       setLocations(locationsData);
+      // Cargar total de registros (valor fijo de todos los registros válidos)
+      try {
+        const totalRes = await fetch("/api/software-approval/total");
+        const totalJson = await totalRes.json();
+        if (totalRes.ok && typeof totalJson.total === "number") {
+          setTotalRecords(totalJson.total);
+        } else {
+          setTotalRecords(null);
+        }
+      } catch (e) {
+        console.error("Error fetching total records:", e);
+        setTotalRecords(null);
+      }
     } catch (error) {
       console.error("Error loading filters:", error);
       setEquipos([]);
       setSoftwares([]);
       setLocations([]);
-    }
-  };
-
-  const loadData = async () => {
-    try {
-      setLoading(true);
-      const params = new URLSearchParams({
-        search,
-        equipo: equipoFilter,
-        estado: estadoFilter,
-        software: softwareFilter,
-        ubicacion: locationFilter,
-      });
-
-      const response = await fetch(`/api/software-approval?${params}`);
-      const result = await response.json();
-
-      const data = response.ok && Array.isArray(result) ? result : [];
-      setData(data);
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -135,8 +149,8 @@ export default function AprobadoPage() {
           ? 1
           : -1
         : sortDirection === "asc"
-        ? -1
-        : 1;
+          ? -1
+          : 1;
     }
 
     // Manejar strings y números
@@ -166,7 +180,7 @@ export default function AprobadoPage() {
     { key: "software", label: "Software" },
     { key: "version", label: "Versión" },
     { key: "aprobado", label: "Estado" },
-  ] as const;
+  ] as { key: keyof SoftwareApprovalRecord; label: string }[];
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 to-red-700 p-5">
@@ -271,7 +285,7 @@ export default function AprobadoPage() {
             <StatsCard
               icon="fas fa-list"
               label="Total de registros"
-              value={data.length}
+              value={totalRecords ?? data.length}
               color="blue"
             />
             <StatsCard
@@ -302,8 +316,9 @@ export default function AprobadoPage() {
                   Mostrando {startIndex + 1} a{" "}
                   {Math.min(endIndex, sortedData.length)} de {sortedData.length}{" "}
                   registros
-                  {sortedData.length !== data.length &&
-                    ` (filtrados de ${data.length} totales)`}
+                  {typeof totalRecords === "number" &&
+                    sortedData.length !== totalRecords &&
+                    ` (filtrados de ${totalRecords} totales)`}
                 </div>
                 <div className="flex items-center space-x-2">
                   <label htmlFor="itemsPerPage" className="text-sm">
@@ -331,7 +346,7 @@ export default function AprobadoPage() {
                 <ExportDropdown
                   rows={paginatedData}
                   allRows={sortedData}
-                  columns={exportColumns as any}
+                  columns={exportColumns}
                 />
                 <button
                   onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}

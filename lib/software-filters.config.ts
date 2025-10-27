@@ -1,4 +1,4 @@
-import { SoftwareFiltersConfig } from './types';
+import { SoftwareFiltersConfig } from "./types";
 export const SOFTWARE_FILTERS: SoftwareFiltersConfig = {
   exclude: [
     // Inician con
@@ -114,9 +114,13 @@ export const SOFTWARE_FILTERS: SoftwareFiltersConfig = {
     /^Dynamic Application Loader Host Interface Service$/i,
     /^DriverManager x64$/i,
     /^E0469640\.SmartAppearance$/i,
+    /^ETWEventCollector$/i,
     /^FiberLaserManagement$/i,
     /^hppLaserJetService$/i,
+    /^NCM GPRS 64/i,
+    /^LWE$/i,
     /^ShellEx Package$/i,
+    /^SeCon$/i,
     /^Teams Machine-Wide Installer$/i,
     /^TelemetryConnector$/i,
     /^TJ1 Device Driver$/i,
@@ -127,7 +131,7 @@ export const SOFTWARE_FILTERS: SoftwareFiltersConfig = {
     /\bWinCC Runtime Advanced Simulator\b/i,
     /^myHP$/i,
   ],
-  
+
   // Patrones para incluir software que empiece con Microsoft
   include: [
     /^Microsoft PowerAutomateDesktop/i,
@@ -140,108 +144,183 @@ export const SOFTWARE_FILTERS: SoftwareFiltersConfig = {
     /.*SIMATIC.*17\.0.*/i,
     /.*SIMATIC.*16\.0.*/i,
   ],
-  
+
   // Patrones para normalizar nombres de software
   normalize: [
-    { pattern: /^(Adobe Acrobat)(?:\s+DC|\s+\d+|\s+Reader|\s+Pro|\s+\(64-bits\))?.*$/i, replacement: '$1' },
-    { pattern: /^AutoCAD(?:\s+Mechanical)?(?:\s+2022)?$/i, replacement: 'AutoDesk AutoCAD 2022' },
-    { pattern: /^Clipchamp(\.Clipchamp)?$/i, replacement: 'Clipchamp' },
-    { pattern: /^(draw\.io)\s+.*$/i, replacement: '$1' },
-    { pattern: /^(Foxit PDF)\s+.*$/i, replacement: '$1' },
-    { pattern: /^(Kaspersky)\s+.*$/i, replacement: '$1' },
-    { pattern: /^(Autodesk DWG TrueView 2025)\s+.*$/i, replacement: 'AutoDesk DWG TrueView 2025' },
+    {
+      pattern:
+        /^(Adobe Acrobat)(?:\s+DC|\s+\d+|\s+Reader|\s+Pro|\s+\(64-bits\))?.*$/i,
+      replacement: "$1",
+    },
+    {
+      pattern: /^AutoCAD(?:\s+Mechanical)?(?:\s+2022)?$/i,
+      replacement: "AutoDesk AutoCAD 2022",
+    },
+    { pattern: /^Clipchamp(\.Clipchamp)?$/i, replacement: "Clipchamp" },
+    { pattern: /^(draw\.io)\s+.*$/i, replacement: "$1" },
+    { pattern: /^(Foxit PDF)\s+.*$/i, replacement: "$1" },
+    { pattern: /^(Kaspersky)\s+.*$/i, replacement: "$1" },
+    {
+      pattern: /^(Autodesk DWG TrueView 2025)\s+.*$/i,
+      replacement: "AutoDesk DWG TrueView 2025",
+    },
 
-    { pattern: /^(Microsoft 365 Apps for business)(?:\s+-\s+\w+-\w+)?$/i, replacement: 'Microsoft Office 365 (Licencia)' },
-    { pattern: /^(Aplicaciones de Microsoft 365 para negocios)(?:\s+-\s+\w+-\w+)?$/i, replacement: 'Microsoft Office 365 (Licencia)' },
+    {
+      pattern: /^(Microsoft 365 Apps for business)(?:\s+-\s+\w+-\w+)?$/i,
+      replacement: "Microsoft Office 365 (Licencia)",
+    },
+    {
+      pattern:
+        /^(Aplicaciones de Microsoft 365 para negocios)(?:\s+-\s+\w+-\w+)?$/i,
+      replacement: "Microsoft Office 365 (Licencia)",
+    },
 
-    { pattern: /^(Microsoft Office Profesional Plus 2019)(?:\s+-\s+\w+-\w+(?:\.\w+)?)?$/i, replacement: 'Microsoft Office 2019' },
-    { pattern: /^(Microsoft Office Professional Plus 2019)(?:\s+-\s+\w+-\w+(?:\.\w+)?)?$/i, replacement: 'Microsoft Office 2019' },
+    {
+      pattern:
+        /^(Microsoft Office Profesional Plus 2019)(?:\s+-\s+\w+-\w+(?:\.\w+)?)?$/i,
+      replacement: "Microsoft Office 2019",
+    },
+    {
+      pattern:
+        /^(Microsoft Office Professional Plus 2019)(?:\s+-\s+\w+-\w+(?:\.\w+)?)?$/i,
+      replacement: "Microsoft Office 2019",
+    },
 
-    { pattern: /^(Microsoft 365 - es-es)(?:\s+-\s+\w+-\w+)?$/i, replacement: 'Microsoft Office 2016' },
-    { pattern: /^(Microsoft PowerPoint 2016)(?:\s+-\s+\w+-\w+)?$/i, replacement: 'Microsoft Office 2016' },
-    { pattern: /^(Microsoft Office Profesional Plus 2016)(?:\s+-\s+\w+-\w+(?:\.\w+)?)?$/i, replacement: 'Microsoft Office 2016' },
-    { pattern: /^(Microsoft Office Professional Plus 2016)(?:\s+-\s+\w+-\w+(?:\.\w+)?)?$/i, replacement: 'Microsoft Office 2016' },
+    {
+      pattern: /^(Microsoft 365 - es-es)(?:\s+-\s+\w+-\w+)?$/i,
+      replacement: "Microsoft Office 2016",
+    },
+    {
+      pattern: /^(Microsoft PowerPoint 2016)(?:\s+-\s+\w+-\w+)?$/i,
+      replacement: "Microsoft Office 2016",
+    },
+    {
+      pattern:
+        /^(Microsoft Office Profesional Plus 2016)(?:\s+-\s+\w+-\w+(?:\.\w+)?)?$/i,
+      replacement: "Microsoft Office 2016",
+    },
+    {
+      pattern:
+        /^(Microsoft Office Professional Plus 2016)(?:\s+-\s+\w+-\w+(?:\.\w+)?)?$/i,
+      replacement: "Microsoft Office 2016",
+    },
 
-    { pattern: /^(Microsoft PowerPoint LTSC)(?:\s+-\s+\w+-\w+(?:\.\w+)?)?$/i, replacement: 'Microsoft Office 2016' },
-    { pattern: /^(Microsoft Office LTSC Professional Plus 2021 - en-us)(?:\s+-\s+\w+-\w+)?$/i, replacement: 'Microsoft Office 2021' },
+    {
+      pattern: /^(Microsoft PowerPoint LTSC)(?:\s+-\s+\w+-\w+(?:\.\w+)?)?$/i,
+      replacement: "Microsoft Office 2016",
+    },
+    {
+      pattern:
+        /^(Microsoft Office LTSC Professional Plus 2021 - en-us)(?:\s+-\s+\w+-\w+)?$/i,
+      replacement: "Microsoft Office 2021",
+    },
 
-    { pattern: /^(Microsoft Project Profesional 2016)(?:\s+-\s+\w+-\w+)?$/i, replacement: 'Project 2016' },
-    { pattern: /^(Microsoft Project Professional 2016)(?:\s+-\s+\w+-\w+)?$/i, replacement: 'Project 2016' },
+    {
+      pattern: /^(Microsoft Project Profesional 2016)(?:\s+-\s+\w+-\w+)?$/i,
+      replacement: "Project 2016",
+    },
+    {
+      pattern: /^(Microsoft Project Professional 2016)(?:\s+-\s+\w+-\w+)?$/i,
+      replacement: "Project 2016",
+    },
 
-    { pattern: /^(Microsoft Project Professional 2021)(?:\s+-\s+\w+-\w+(?:\.\w+)?)?$/i, replacement: 'Project 2021' },
-    { pattern: /^(Microsoft Project Profesional 2021)(?:\s+-\s+\w+-\w+(?:\.\w+)?)?$/i, replacement: 'Project 2021' },
-    { pattern: /^(Microsoft Project)(?:\s+-\s+\w+-\w+)?$/i, replacement: 'Project 2021' },
+    {
+      pattern:
+        /^(Microsoft Project Professional 2021)(?:\s+-\s+\w+-\w+(?:\.\w+)?)?$/i,
+      replacement: "Project 2021",
+    },
+    {
+      pattern:
+        /^(Microsoft Project Profesional 2021)(?:\s+-\s+\w+-\w+(?:\.\w+)?)?$/i,
+      replacement: "Project 2021",
+    },
+    {
+      pattern: /^(Microsoft Project)(?:\s+-\s+\w+-\w+)?$/i,
+      replacement: "Project 2021",
+    },
 
-    { pattern: /^Microsoft PowerAutomateDesktop\s*$/i, replacement: 'Power Automate' },
-    
-    { pattern: /^(Python)\s+.*$/i, replacement: '$1' },
-    { pattern: /^(PowerToys)\s+.*$/i, replacement: '$1' },
-    { pattern: /^(WinRAR)\s+.*$/i, replacement: '$1' },
-    
-    { pattern: /^(spacedesk Windows DRIVER)\s+.*$/i, replacement: '$1' },
-    { pattern: /^(DaVinci Resolve)\s+.*$/i, replacement: '$1' },
-    { pattern: /^(FluidSIM Pneumatics V 4\.2)\s+.*$/i, replacement: '$1' },
-    { pattern: /^(Krita)\s+.*$/i, replacement: '$1' },
-    { pattern: /^(Mozilla)\s+.*$/i, replacement: 'Mozilla Firefox' },
-    
-    { pattern: /^(TAP-Windows)\s+.*$/i, replacement: 'IXON VPN' },
-    { pattern: /.*IXON.*/i, replacement: 'IXON VPN' },
+    {
+      pattern: /^Microsoft PowerAutomateDesktop\s*$/i,
+      replacement: "Power Automate",
+    },
 
-    { pattern: /.*Vijeo Designer.*/i, replacement: 'Vijeo Designer' },
+    { pattern: /^(Python)\s+.*$/i, replacement: "$1" },
+    { pattern: /^(PowerToys)\s+.*$/i, replacement: "$1" },
+    { pattern: /^(WinRAR)\s+.*$/i, replacement: "$1" },
 
-    { pattern: /.*Spotify.*/i, replacement: 'Spotify' },
-    { pattern: /.*EPLAN.*2\.9.*/i, replacement: 'EPLAN 2.9' },
-    { pattern: /.*McAfee.*/i, replacement: 'McAfee Security' },
-    { pattern: /.*AnyDesk.*/i, replacement: 'AnyDesk' },
-    { pattern: /.*Inventor.*/i, replacement: 'AutoDesk Inventor 2022' },
+    { pattern: /^(spacedesk Windows DRIVER)\s+.*$/i, replacement: "$1" },
+    { pattern: /^(DaVinci Resolve)\s+.*$/i, replacement: "$1" },
+    { pattern: /^(FluidSIM Pneumatics V 4\.2)\s+.*$/i, replacement: "$1" },
+    { pattern: /^(Krita)\s+.*$/i, replacement: "$1" },
+    { pattern: /^(Mozilla)\s+.*$/i, replacement: "Mozilla Firefox" },
 
-    { pattern: /.*CX-One.*/i, replacement: 'Omron' },
-    { pattern: /.*CX-Server.*/i, replacement: 'Omron' },
-    { pattern: /.*CX Common Tools.*/i, replacement: 'Omron' },
+    { pattern: /^(TAP-Windows)\s+.*$/i, replacement: "IXON VPN" },
+    { pattern: /.*IXON.*/i, replacement: "IXON VPN" },
 
-    { pattern: /.*SQL.*/i, replacement: 'MySQL' },
-    { pattern: /.*EPLAN.*/i, replacement: 'EPLAN' },
-    { pattern: /.*Logi.*/i, replacement: 'Logi Options+' },
-    { pattern: /.*VLC.*/i, replacement: 'VLC Media Player' },
-    { pattern: /.*Notepad\+\+.*/i, replacement: 'Notepad++' },
-    { pattern: /.*OpenOffice.*/i, replacement: 'OpenOffice' },
-    { pattern: /.*Macrium.*/i, replacement: 'Macrium Reflect' },
-    { pattern: /.*LibreOffice.*/i, replacement: 'LibreOffice' },
-    { pattern: /.*DobotStudio.*/i, replacement: 'DobotStudio' },
-    { pattern: /.*LOGO!.*/i, replacement: 'LOGO! Soft Comfort' },
-    { pattern: /.*DWG FastView.*/i, replacement: 'DWG FastView' },
-    { pattern: /.*Malwarebytes.*/i, replacement: 'Malwarebytes' },
-    { pattern: /.*KUKA.*/i, replacement: 'KUKA Engineering Tools' },
-    { pattern: /.*OneDrive.*/i, replacement: 'Microsoft OneDrive' },
-    { pattern: /.*Revo Uninstaller.*/i, replacement: 'Revo Uninstaller' },
-    { pattern: /.*MediBang Paint Pro.*/i, replacement: 'MediBang Paint Pro' },
-    { pattern: /.*Silicon Laboratories.*/i, replacement: 'Silicon Laboratories' },
+    { pattern: /.*Vijeo Designer.*/i, replacement: "Vijeo Designer" },
 
-    { pattern: /.*CrystalDiskInfo.*/i, replacement: 'CrystalDiskInfo' },
-    { pattern: /.*CrystalDiskMark.*/i, replacement: 'CrystalDiskMark' },
+    { pattern: /.*Spotify.*/i, replacement: "Spotify" },
+    { pattern: /.*EPLAN.*2\.9.*/i, replacement: "EPLAN 2.9" },
+    { pattern: /.*McAfee.*/i, replacement: "McAfee Security" },
+    { pattern: /.*AnyDesk.*/i, replacement: "AnyDesk" },
+    { pattern: /.*Inventor.*/i, replacement: "AutoDesk Inventor 2022" },
 
-    { pattern: /.*Totally Integrated Automation Portal V16.*/i, replacement: 'Siemens TIA Portal V16' },
-    { pattern: /.*Totally Integrated Automation Portal V17.*/i, replacement: 'Siemens TIA Portal V17' },
+    { pattern: /.*CX-One.*/i, replacement: "Omron" },
+    { pattern: /.*CX-Server.*/i, replacement: "Omron" },
+    { pattern: /.*CX Common Tools.*/i, replacement: "Omron" },
 
-    { pattern: /.*SIMATIC.*16.*/i, replacement: 'SIMATIC V16' },
-    { pattern: /.*SIMATIC.*17.*/i, replacement: 'SIMATIC V17' },
+    { pattern: /.*SQL.*/i, replacement: "MySQL" },
+    { pattern: /.*EPLAN.*/i, replacement: "EPLAN" },
+    { pattern: /.*Logi.*/i, replacement: "Logi Options+" },
+    { pattern: /.*VLC.*/i, replacement: "VLC Media Player" },
+    { pattern: /.*Notepad\+\+.*/i, replacement: "Notepad++" },
+    { pattern: /.*OpenOffice.*/i, replacement: "OpenOffice" },
+    { pattern: /.*Macrium.*/i, replacement: "Macrium Reflect" },
+    { pattern: /.*LibreOffice.*/i, replacement: "LibreOffice" },
+    { pattern: /.*DobotStudio.*/i, replacement: "DobotStudio" },
+    { pattern: /.*LOGO!.*/i, replacement: "LOGO! Soft Comfort" },
+    { pattern: /.*DWG FastView.*/i, replacement: "DWG FastView" },
+    { pattern: /.*Malwarebytes.*/i, replacement: "Malwarebytes" },
+    { pattern: /.*KUKA.*/i, replacement: "KUKA Engineering Tools" },
+    { pattern: /.*OneDrive.*/i, replacement: "Microsoft OneDrive" },
+    { pattern: /.*Revo Uninstaller.*/i, replacement: "Revo Uninstaller" },
+    { pattern: /.*MediBang Paint Pro.*/i, replacement: "MediBang Paint Pro" },
+    {
+      pattern: /.*Silicon Laboratories.*/i,
+      replacement: "Silicon Laboratories",
+    },
 
-    { pattern: /.*TIA.*16.*/i, replacement: 'Siemens TIA Portal V16' },
-    { pattern: /.*TIA.*17.*/i, replacement: 'Siemens TIA Portal V17' },
+    { pattern: /.*CrystalDiskInfo.*/i, replacement: "CrystalDiskInfo" },
+    { pattern: /.*CrystalDiskMark.*/i, replacement: "CrystalDiskMark" },
 
-    { pattern: /.*HMIRTM.*16.*/i, replacement: 'Siemens HMIRTM V16' },
-    { pattern: /.*HMIRTM.*17.*/i, replacement: 'Siemens HMIRTM V17' },
+    {
+      pattern: /.*Totally Integrated Automation Portal V16.*/i,
+      replacement: "Siemens TIA Portal V16",
+    },
+    {
+      pattern: /.*Totally Integrated Automation Portal V17.*/i,
+      replacement: "Siemens TIA Portal V17",
+    },
 
-    { pattern: /.*16.*OPCUA.*/i, replacement: 'Siemens OPCUA V16' },
-    { pattern: /.*17.*OPCUA.*/i, replacement: 'Siemens OPCUA V17' },
-    { pattern: /.*OPC.*/i, replacement: 'Siemens OPCUA V16' },
-    { pattern: /.*OPC.*/i, replacement: 'Siemens OPCUA V17' },
+    { pattern: /.*SIMATIC.*16.*/i, replacement: "SIMATIC V16" },
+    { pattern: /.*SIMATIC.*17.*/i, replacement: "SIMATIC V17" },
 
-    { pattern: /.*SCADA.*16.*/i, replacement: 'Siemens SCADA V16' },
-    { pattern: /.*SCADA.*17.*/i, replacement: 'Siemens SCADA V17' },
+    { pattern: /.*TIA.*16.*/i, replacement: "Siemens TIA Portal V16" },
+    { pattern: /.*TIA.*17.*/i, replacement: "Siemens TIA Portal V17" },
 
-    { pattern: /.*DOPSOFT.*/i, replacement: 'ISPSoft' },
-    { pattern: /.*DCISOFT.*/i, replacement: 'ISPSoft' },
-    { pattern: /.*ISPSoft.*/i, replacement: 'ISPSoft' }
-  ]
+    { pattern: /.*HMIRTM.*16.*/i, replacement: "Siemens HMIRTM V16" },
+    { pattern: /.*HMIRTM.*17.*/i, replacement: "Siemens HMIRTM V17" },
+
+    { pattern: /.*16.*OPCUA.*/i, replacement: "Siemens OPCUA V16" },
+    { pattern: /.*17.*OPCUA.*/i, replacement: "Siemens OPCUA V17" },
+    { pattern: /.*OPC.*/i, replacement: "Siemens OPCUA V16" },
+    { pattern: /.*OPC.*/i, replacement: "Siemens OPCUA V17" },
+
+    { pattern: /.*SCADA.*16.*/i, replacement: "Siemens SCADA V16" },
+    { pattern: /.*SCADA.*17.*/i, replacement: "Siemens SCADA V17" },
+
+    { pattern: /.*DOPSOFT.*/i, replacement: "ISPSoft" },
+    { pattern: /.*DCISOFT.*/i, replacement: "ISPSoft" },
+    { pattern: /.*ISPSoft.*/i, replacement: "ISPSoft" },
+  ],
 };

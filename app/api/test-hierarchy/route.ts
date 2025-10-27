@@ -1,11 +1,11 @@
-import { NextResponse } from 'next/server';
-import { 
+import { NextResponse } from "next/server";
+import {
   isSoftwareApprovedForLocation,
   getApprovedSoftwareHierarchy,
   readApprovedSoftware,
-  getApprovedSoftwareCache
-} from '@/lib/excel-utils';
-import { getDbPool } from '@/lib/db';
+  getApprovedSoftwareCache,
+} from "@/lib/excel-utils";
+import { getDbPool } from "@/lib/db";
 
 export async function GET() {
   // Asegurar que el cache esté inicializado
@@ -14,7 +14,7 @@ export async function GET() {
   }
 
   const hierarchy = getApprovedSoftwareHierarchy();
-  
+
   // Obtener algunos equipos reales con sus ubicaciones
   const pool = await getDbPool();
   const [equiposRows] = await pool.execute(`
@@ -26,28 +26,28 @@ export async function GET() {
     WHERE c.is_deleted = 0 AND c.is_template = 0
     LIMIT 20
   `);
-  
+
   const equipos = equiposRows as { equipo: string; ubicacion: string }[];
 
   // Pruebas específicas para Adobe software con ubicaciones reales
   const testSoftware = [
-    'Adobe Illustrator CC 2015',
-    'Adobe Photoshop CC 2015',
-    'Alison-Desktop',
-    'Dropbox',
-    'DaVinci Resolve',
-    'DWG FastView',
-    'Krita',
-    'AutoDesk AutoCAD 2022',
+    "Adobe Illustrator CC 2015",
+    "Adobe Photoshop CC 2015",
+    "Alison-Desktop",
+    "Dropbox",
+    "DaVinci Resolve",
+    "DWG FastView",
+    "Krita",
+    "AutoDesk AutoCAD 2022",
   ];
-  
-  const testResults = equipos.flatMap(({ equipo, ubicacion }) => 
-    testSoftware.map(software => ({
+
+  const testResults = equipos.flatMap(({ equipo, ubicacion }) =>
+    testSoftware.map((software) => ({
       equipo,
       ubicacion,
       software,
-      aprobado: isSoftwareApprovedForLocation(software, ubicacion || ''),
-    }))
+      aprobado: isSoftwareApprovedForLocation(software, ubicacion || ""),
+    })),
   );
 
   // Mostrar toda la jerarquía para debugging
@@ -55,8 +55,8 @@ export async function GET() {
     summary: {
       totalEquipos: equipos.length,
       totalSoftware: testSoftware.length,
-      aprobados: testResults.filter(r => r.aprobado).length,
-      desaprobados: testResults.filter(r => !r.aprobado).length,
+      aprobados: testResults.filter((r) => r.aprobado).length,
+      desaprobados: testResults.filter((r) => !r.aprobado).length,
     },
     equiposConUbicaciones: equipos,
     testResults: testResults,
@@ -72,17 +72,17 @@ export async function GET() {
             count: (software as string[]).length,
             software: software,
           },
-        ])
+        ]),
       ),
       puestos: Object.fromEntries(
         Object.entries(hierarchy.puestos).map(([puesto, data]) => [
           puesto,
           {
-            area: (data as any).area,
-            count: (data as any).software.length,
-            software: (data as any).software,
+            area: data.area as string,
+            count: (data.software as string[]).length,
+            software: data.software as string[],
           },
-        ])
+        ]),
       ),
     },
   });

@@ -9,29 +9,16 @@ import {
   getApprovedSoftwareCache,
 } from "@/lib/excel-utils";
 
-export async function GET(request: Request) {
+export async function GET() {
   try {
-    const { searchParams } = new URL(request.url);
-    const search = searchParams.get("search") || "";
-    const equipo = searchParams.get("equipo") || "all";
-    const estado = searchParams.get("estado") || "all";
-    const software = searchParams.get("software") || "all";
-    const ubicacion = searchParams.get("ubicacion") || "all";
-
     // Inicializar cache de software aprobado si está vacío
     if (getApprovedSoftwareCache().length === 0) {
-      console.log("🔄 Inicializando cache de software aprobado desde API...");
       await readApprovedSoftware();
-      console.log(
-        "✅ Cache inicializado con",
-        getApprovedSoftwareCache().length,
-        "elementos",
-      );
     }
 
     const pool = await getDbPool();
 
-    let query = `
+    const query = `
       SELECT 
         c.name AS equipo,
         c.name AS computadora,
@@ -53,22 +40,10 @@ export async function GET(request: Request) {
           ON s.softwarecategories_id = sc.id
       WHERE c.is_deleted = 0 AND c.is_template = 0
           AND (sc.name IS NULL OR sc.name NOT IN ('system', 'update', 'system_update'))
+      ORDER BY l.completename, c.name, s.name
     `;
 
-    const params: string[] = [];
-
-    if (equipo !== "all") {
-      query += " AND c.name = ?";
-      params.push(equipo);
-    }
-    if (ubicacion !== "all") {
-      query += " AND l.completename = ?";
-      params.push(ubicacion);
-    }
-
-    query += " ORDER BY l.completename, c.name, s.name";
-
-    const [rows] = await pool.execute(query, params);
+    const [rows] = await pool.execute(query);
     let data = rows as SoftwareApprovalRecord[];
 
     // Filtrar, normalizar y verificar aprobación con jerarquía de ubicación
@@ -76,7 +51,6 @@ export async function GET(request: Request) {
       .filter((item) => !shouldExcludeSoftware(item.software))
       .map((item) => {
         const normalizedSoftware = normalizeSoftwareName(item.software);
-        // Usar la nueva función que considera la ubicación y la jerarquía
         const aprobado = isSoftwareApprovedForLocation(
           normalizedSoftware,
           item.ubicacion || "",
@@ -87,21 +61,6 @@ export async function GET(request: Request) {
           aprobado: aprobado,
         };
       });
-
-    // Aplicar filtro de software específico
-    if (software !== "all") {
-      data = data.filter((item) => item.software === software);
-    }
-
-    // Aplicar búsqueda en los datos normalizados
-    if (search) {
-      const searchLower = search.toLowerCase();
-      data = data.filter(
-        (item) =>
-          item.computadora.toLowerCase().includes(searchLower) ||
-          item.software.toLowerCase().includes(searchLower),
-      );
-    }
 
     // Eliminar duplicados por computadora + software
     data = Array.from(
@@ -116,18 +75,13 @@ export async function GET(request: Request) {
         .values(),
     );
 
-    // Filtrar por estado de aprobación
-    if (estado === "aprobado") {
-      data = data.filter((item) => item.aprobado);
-    } else if (estado === "desaprobado") {
-      data = data.filter((item) => !item.aprobado);
-    }
+    const total = data.length;
 
-    return NextResponse.json(data);
+    return NextResponse.json({ total });
   } catch (error) {
-    console.error("Error fetching software approval data:", error);
+    console.error("Error fetching total software approval count:", error);
     return NextResponse.json(
-      { error: "Error al obtener datos de aprobación de software" },
+      { error: "Error al obtener total de registros" },
       { status: 500 },
     );
   }

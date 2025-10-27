@@ -16,13 +16,13 @@ export default function ExportDropdown<RowType>({
 }: ExportDropdownProps<RowType>) {
   const [open, setOpen] = useState(false);
   const [selectedCols, setSelectedCols] = useState<string[]>(
-    columns.map((c) => String(c.key))
+    columns.map((c) => String(c.key)),
   );
   const [exportScope, setExportScope] = useState<"page" | "all">("page");
 
   const toggleCol = (key: string) => {
     setSelectedCols((prev) =>
-      prev.includes(key) ? prev.filter((k) => k !== key) : [...prev, key]
+      prev.includes(key) ? prev.filter((k) => k !== key) : [...prev, key],
     );
   };
 
@@ -30,17 +30,20 @@ export default function ExportDropdown<RowType>({
     const dataSource = exportScope === "all" && allRows ? allRows : rows;
 
     // Map rows to plain objects with only selected columns
-    const exportData = (dataSource || []).map((r: any) => {
-      const out: Record<string, any> = {};
+    const exportData = (dataSource || []).map((r: RowType) => {
+      const out: Record<string, string> = {};
       for (const col of columns) {
         const key = String(col.key);
         if (selectedCols.includes(key)) {
-          let val = r[col.key as any];
-          // Convert boolean aprobado to human readable
-          if (typeof val === "boolean") {
-            val = val ? "Aprobado" : "No Aprobado";
-          }
-          out[col.label] = val ?? "";
+          const rawVal = r[col.key];
+          // Convert different types to string
+          const val =
+            typeof rawVal === "boolean"
+              ? rawVal
+                ? "Aprobado"
+                : "No Aprobado"
+              : rawVal;
+          out[col.label] = val?.toString() ?? "";
         }
       }
       return out;
@@ -51,7 +54,7 @@ export default function ExportDropdown<RowType>({
     // ws['!ref'] contiene el rango A1:...; usamos ese rango para el autofilter
     if (ws && ws["!ref"]) {
       try {
-        ws["!autofilter"] = { ref: ws["!ref"] } as any;
+        ws["!autofilter"] = { ref: ws["!ref"] };
       } catch (e) {
         // no crítico si falla
         console.warn("No se pudo establecer autofilter en la hoja:", e);
@@ -59,15 +62,11 @@ export default function ExportDropdown<RowType>({
     }
 
     // Establecer anchos de columna razonables según etiquetas de columnas
-    try {
-      const firstRow = exportData[0] || {};
-      const keys = Object.keys(firstRow);
-      ws["!cols"] = keys.map((k) => ({
-        wch: Math.min(Math.max(k.length + 5, 10), 40),
-      }));
-    } catch (e) {
-      // ignore
-    }
+    const firstRow = exportData[0] || {};
+    const keys = Object.keys(firstRow);
+    ws["!cols"] = keys.map((k) => ({
+      wch: Math.min(Math.max(k.length + 5, 10), 40),
+    }));
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, "Export");
 

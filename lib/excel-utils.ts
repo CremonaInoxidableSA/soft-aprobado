@@ -161,7 +161,7 @@ export async function readApprovedSoftware(): Promise<string[]> {
             approvedSoftwareHierarchy.areas.get(areaNormalized)!.push(normalizedSoftware);
           } else {
             // Software de puesto específico
-            const puestoKey = `${areaNormalized}_${puestoNormalized}`;
+            const puestoKey = `${areaNormalized}|||${puestoNormalized}`;
             if (!approvedSoftwareHierarchy.puestos.has(puestoKey)) {
               approvedSoftwareHierarchy.puestos.set(puestoKey, {
                 area: areaNormalized,
@@ -240,8 +240,8 @@ function parseLocation(ubicacion: string): { area: string; puesto: string } {
   let bestMatchLength = 0;
   
   for (const [puestoKey, puestoData] of approvedSoftwareHierarchy.puestos.entries()) {
-    // El puestoKey es "area_puesto" (ambos normalizados)
-    const [area, puesto] = puestoKey.split('_');
+    // El puestoKey es "area|||puesto" (ambos normalizados)
+    const [area, puesto] = puestoKey.split('|||');
     
     // Verificar si la ubicación contiene el nombre del puesto
     // Buscamos la coincidencia más larga para ser más específicos
@@ -337,7 +337,7 @@ export function isSoftwareApprovedForLocation(softwareName: string, ubicacion: s
   }
   
   // 3. Verificar en software específico del Puesto
-  const puestoKey = `${area}_${puesto}`;
+  const puestoKey = `${area}|||${puesto}`;
   const puestoData = approvedSoftwareHierarchy.puestos.get(puestoKey);
   if (puestoData) {
     // El puesto hereda su propio software

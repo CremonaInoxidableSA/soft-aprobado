@@ -119,6 +119,8 @@ export const SOFTWARE_FILTERS: SoftwareFiltersConfig = {
     /^hppLaserJetService$/i,
     /^NCM GPRS 64/i,
     /^LWE$/i,
+    /^REX Framework$/i,
+    /^RSA Engine$/i,
     /^ShellEx Package$/i,
     /^SeCon$/i,
     /^Teams Machine-Wide Installer$/i,

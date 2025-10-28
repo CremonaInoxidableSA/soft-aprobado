@@ -7,10 +7,6 @@ RUN npm prune --production
 # Copiar el resto del código
 COPY . .
 
-# Lint y formateo de código
-RUN npx eslint --fix . && \
-  npx prettier --write .
-
 # Build de Next.js
 RUN npm run build
 

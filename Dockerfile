@@ -31,6 +31,3 @@ EXPOSE 3000
 
 # Comando de inicio
 CMD ["npm", "run", "start"]
-
-# Verificar permisos del archivo de Excel
-RUN chmod 644 ./data/RP_Software_Aprobado.xlsx

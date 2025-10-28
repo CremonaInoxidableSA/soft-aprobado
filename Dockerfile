@@ -7,7 +7,7 @@ RUN npm install
 COPY . .
 
 # Copiar el archivo de Excel (si existe en el proyecto)
-COPY ./data/approved-list.xlsx ./data/approved-list.xlsx
+COPY ./data/RP_Software_Aprobado.xlsx ./data/RP_Software_Aprobado.xlsx
 
 # Lint y formateo de código
 RUN npx eslint --fix . && \
@@ -33,4 +33,4 @@ EXPOSE 3000
 CMD ["npm", "run", "start"]
 
 # Verificar permisos del archivo de Excel
-RUN chmod 644 ./data/approved-list.xlsx
+RUN chmod 644 ./data/RP_Software_Aprobado.xlsx

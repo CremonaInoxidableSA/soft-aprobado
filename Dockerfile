@@ -4,6 +4,11 @@ COPY package*.json ./
 RUN npm install
 RUN npm prune --production
 
+# Lint y formateo de código
+RUN npx eslint --fix . && \
+  npx prettier --write . && \
+  npm install typescript
+
 # Copiar el resto del código
 COPY . .
 

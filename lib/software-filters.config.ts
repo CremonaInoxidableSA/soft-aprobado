@@ -98,6 +98,8 @@ export const SOFTWARE_FILTERS: SoftwareFiltersConfig = {
     /.*TIA Portal Project Server Single.*/i,
     /.*Thinkpad.*/i,
     /.*TrackPoint.*/i,
+    /.*PowerAutomateDesktop.*/i,
+    /.*Power Automate.*/i,
     /.*Update.*/i,
     /.*Upgrade.*/i,
     /.*X-Mouse Button Control 2.20.5.*/i,
@@ -121,7 +123,6 @@ export const SOFTWARE_FILTERS: SoftwareFiltersConfig = {
     /^hppLaserJetService$/i,
     /^NCM GPRS 64/i,
     /^LWE$/i,
-    /^PowerAutomateDesktop/i,
     /^REX Framework$/i,
     /^RSA Engine$/i,
     /^ShellEx Package$/i,
@@ -140,7 +141,6 @@ export const SOFTWARE_FILTERS: SoftwareFiltersConfig = {
 
   // Incluir
   include: [
-    /^Microsoft PowerAutomateDesktop/i,
     /^Microsoft PowerPoint 2016/i,
     /^Microsoft PowerPoint LTSC - es-es\.proof/i,
     /^Microsoft 365 - es-es/i,

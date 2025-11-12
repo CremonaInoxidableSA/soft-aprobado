@@ -123,6 +123,9 @@ export const SOFTWARE_FILTERS: SoftwareFiltersConfig = {
     /^hppLaserJetService$/i,
     /^NCM GPRS 64/i,
     /^LWE$/i,
+    /^LJDXPHelperUI$/i,
+    /^Local AI Manager for Microsoft 365$/i,
+    /^PrebootManager$/i,
     /^REX Framework$/i,
     /^RSA Engine$/i,
     /^ShellEx Package$/i,
@@ -210,6 +213,7 @@ export const SOFTWARE_FILTERS: SoftwareFiltersConfig = {
     { pattern: /.*CX Common Tools.*/i, replacement: "Omron" },
 
     { pattern: /.*SQL.*/i, replacement: "MySQL" },
+    { pattern: /.*SmartPSS.*/i, replacement: "SmartPSS" },
     { pattern: /.*EPLAN.*/i, replacement: "EPLAN" },
     { pattern: /.*Logi.*/i, replacement: "Logi Options+" },
     { pattern: /.*VLC.*/i, replacement: "VLC Media Player" },

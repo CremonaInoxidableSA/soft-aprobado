@@ -130,6 +130,7 @@ export const SOFTWARE_FILTERS: SoftwareFiltersConfig = {
     /^RSA Engine$/i,
     /^ShellEx Package$/i,
     /^SeCon$/i,
+    /^SenarySmartAudio$/i,
     /^Teams Machine-Wide Installer$/i,
     /^TelemetryConnector$/i,
     /^TJ1 Device Driver$/i,
@@ -213,8 +214,10 @@ export const SOFTWARE_FILTERS: SoftwareFiltersConfig = {
     { pattern: /.*CX Common Tools.*/i, replacement: "Omron" },
 
     { pattern: /.*SQL.*/i, replacement: "MySQL" },
+    { pattern: /.*CPU-Z.*/i, replacement: "CPU-Z" },
     { pattern: /.*EPLAN.*/i, replacement: "EPLAN" },
     { pattern: /.*SmartPSS.*/i, replacement: "SmartPSS" },
+    { pattern: /.*TreeSize.*/i, replacement: "TreeSize" },
     { pattern: /.*Logi.*/i, replacement: "Logi Options+" },
     { pattern: /.*VLC.*/i, replacement: "VLC Media Player" },
     { pattern: /.*Notepad\+\+.*/i, replacement: "Notepad++" },

@@ -203,9 +203,9 @@ export const SOFTWARE_FILTERS: SoftwareFiltersConfig = {
     { pattern: /.*Vijeo Designer.*/i, replacement: "Vijeo Designer" },
 
     { pattern: /.*Spotify.*/i, replacement: "Spotify" },
+    { pattern: /.*AnyDesk.*/i, replacement: "AnyDesk" },
     { pattern: /.*EPLAN.*2\.9.*/i, replacement: "EPLAN 2.9" },
     { pattern: /.*McAfee.*/i, replacement: "McAfee Security" },
-    { pattern: /.*AnyDesk.*/i, replacement: "AnyDesk" },
     { pattern: /.*Inventor.*/i, replacement: "AutoDesk Inventor 2022" },
 
     { pattern: /.*CX-One.*/i, replacement: "Omron" },
@@ -213,8 +213,8 @@ export const SOFTWARE_FILTERS: SoftwareFiltersConfig = {
     { pattern: /.*CX Common Tools.*/i, replacement: "Omron" },
 
     { pattern: /.*SQL.*/i, replacement: "MySQL" },
-    { pattern: /.*SmartPSS.*/i, replacement: "SmartPSS" },
     { pattern: /.*EPLAN.*/i, replacement: "EPLAN" },
+    { pattern: /.*SmartPSS.*/i, replacement: "SmartPSS" },
     { pattern: /.*Logi.*/i, replacement: "Logi Options+" },
     { pattern: /.*VLC.*/i, replacement: "VLC Media Player" },
     { pattern: /.*Notepad\+\+.*/i, replacement: "Notepad++" },
@@ -228,8 +228,10 @@ export const SOFTWARE_FILTERS: SoftwareFiltersConfig = {
     { pattern: /.*KUKA.*/i, replacement: "KUKA Engineering Tools" },
     { pattern: /.*OneDrive.*/i, replacement: "Microsoft OneDrive" },
     { pattern: /.*Angry IP Scanner.*/i, replacement: "Angry IP Scanner" },
+    { pattern: /.*VC User 71 RTL X86.*/i, replacement: "VC User 71 RTL" },
     { pattern: /.*Revo Uninstaller.*/i, replacement: "Revo Uninstaller" },
     { pattern: /.*MediBang Paint Pro.*/i, replacement: "MediBang Paint Pro" },
+    { pattern: /.*Advanced IP Scanner.*/i, replacement: "Advanced IP Scanner" },
     { pattern: /.*Silicon Laboratories.*/i, replacement: "Silicon Laboratories" },
 
     { pattern: /.*CrystalDiskInfo.*/i, replacement: "CrystalDiskInfo" },

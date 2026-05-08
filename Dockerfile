@@ -1,34 +1,41 @@
+# ── Etapa 1: Build ───────────────────────────────────────────────────────────
 FROM node:20-alpine AS builder
 WORKDIR /app
-COPY package*.json ./
-RUN npm install
 
-# Copiar el resto del código
+COPY package*.json ./
+RUN npm ci
+
 COPY . .
 
-# Copiar el archivo de Excel (si existe en el proyecto)
-COPY ./data/RP_Software_Aprobado.xlsx ./data/RP_Software_Aprobado.xlsx
+# Variables de entorno necesarias solo en tiempo de build (Next.js las requiere)
+ARG DB_HOST=localhost
+ARG DB_PORT=3306
+ARG DB_USER=root
+ARG DB_PASSWORD=
+ARG DB_NAME=glpi
 
-# Lint y formateo de código
-RUN npx eslint --fix . && \
-  npx prettier --write .
+ENV DB_HOST=$DB_HOST \
+  DB_PORT=$DB_PORT \
+  DB_USER=$DB_USER \
+  DB_PASSWORD=$DB_PASSWORD \
+  DB_NAME=$DB_NAME
 
-# Build de Next.js
 RUN npm run build
 
-# Etapa 2: Producción
+# ── Etapa 2: Runner (imagen mínima con standalone) ────────────────────────────
 FROM node:20-alpine AS runner
-
 WORKDIR /app
 
-# Copiar archivos necesarios desde la etapa de build
-COPY --from=builder /app/package*.json ./
-COPY --from=builder /app/.next ./.next
-COPY --from=builder /app/node_modules ./node_modules
-COPY --from=builder /app/data/RP_Software_Aprobado.xlsx ./data/RP_Software_Aprobado.xlsx
+ENV NODE_ENV=production \
+  PORT=3000 \
+  HOSTNAME=0.0.0.0
 
-# Puerto por defecto de Next.js
+# Archivos generados por Next.js standalone
+COPY --from=builder /app/.next/standalone ./
+COPY --from=builder /app/.next/static ./.next/static
+COPY --from=builder /app/public ./public
+
 EXPOSE 3000
 
-# Comando de inicio
-CMD ["npm", "run", "start"]
+# El servidor standalone de Next.js no usa npm start
+CMD ["node", "server.js"]

@@ -11,6 +11,38 @@ export const dbConfig: DbConfig = {
   port: parseInt(process.env.DB_PORT || "3306"),
 };
 
+async function ensureTablesExist(p: mysql.Pool): Promise<void> {
+  const conn = await p.getConnection();
+  try {
+    await conn.execute(`
+      CREATE TABLE IF NOT EXISTS creminox_software_autorizado (
+        id           INT AUTO_INCREMENT PRIMARY KEY,
+        software     VARCHAR(255) NOT NULL,
+        area         VARCHAR(255) DEFAULT NULL,
+        puesto       VARCHAR(255) DEFAULT NULL,
+        computadora  VARCHAR(255) DEFAULT NULL,
+        created_at   DATETIME    DEFAULT NOW(),
+        INDEX idx_software    (software(191)),
+        INDEX idx_area        (area(191)),
+        INDEX idx_computadora (computadora(191))
+      ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
+    `);
+    // Migración: agregar columna si la tabla ya existía sin ella
+    try {
+      await conn.execute(
+        `ALTER TABLE creminox_software_autorizado ADD COLUMN computadora VARCHAR(255) DEFAULT NULL`,
+      );
+      await conn.execute(
+        `ALTER TABLE creminox_software_autorizado ADD INDEX idx_computadora (computadora(191))`,
+      );
+    } catch {
+      // La columna ya existe — ignorar el error
+    }
+  } finally {
+    conn.release();
+  }
+}
+
 export async function getDbPool() {
   if (!pool) {
     pool = mysql.createPool({
@@ -23,6 +55,7 @@ export async function getDbPool() {
     try {
       const connection = await pool.getConnection();
       connection.release();
+      await ensureTablesExist(pool);
     } catch (error) {
       throw error;
     }

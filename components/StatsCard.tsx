@@ -8,10 +8,10 @@ interface StatsCardProps {
 }
 
 const colorClasses = {
-  blue: "from-blue-500 to-blue-600",
-  purple: "from-purple-500 to-purple-600",
-  green: "from-green-500 to-emerald-600",
-  red: "from-red-500 to-orange-600",
+  blue: "bg-blue/20 text-blue border-blue/40",
+  purple: "bg-blue/20 text-blue border-blue/40",
+  green: "bg-green/20 text-green border-green/40",
+  red: "bg-red2/20 text-red2 border-red2/40",
 };
 
 export default function StatsCard({
@@ -21,11 +21,9 @@ export default function StatsCard({
   color,
 }: StatsCardProps) {
   return (
-    <div
-      className={`bg-gradient-to-br ${colorClasses[color]} text-white rounded-lg p-6 shadow-lg`}
-    >
+    <div className={`${colorClasses[color]} rounded-lg p-6 border`}>
       <i className={`${icon} text-3xl mb-3 block`}></i>
-      <div className="text-sm opacity-90 mb-1">{label}</div>
+      <div className="text-sm opacity-80 mb-1">{label}</div>
       <div className="text-4xl font-bold">{(value ?? 0).toLocaleString()}</div>
     </div>
   );

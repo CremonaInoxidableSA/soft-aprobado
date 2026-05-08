@@ -4,19 +4,19 @@ import { SoftwareApprovalRecord } from "@/lib/types";
 import {
   shouldExcludeSoftware,
   normalizeSoftwareName,
-  isSoftwareApprovedForLocation,
-  readApprovedSoftware,
-  getApprovedSoftwareCache,
 } from "@/lib/excel-utils";
+import {
+  ensureDbCacheLoaded,
+  isSoftwareApprovedForLocationDb,
+} from "@/lib/db-autorizado";
 
 export async function GET() {
-  if (getApprovedSoftwareCache().length === 0) {
-    await readApprovedSoftware();
-  }
+  try {
+    await ensureDbCacheLoaded();
 
-  const pool = await getDbPool();
+    const pool = await getDbPool();
 
-  const query = `
+    const query = `
     SELECT 
       c.name AS equipo,
       c.name AS computadora,
@@ -41,37 +41,40 @@ export async function GET() {
     ORDER BY l.completename, c.name, s.name
   `;
 
-  const [rows] = await pool.execute(query);
-  let data = rows as SoftwareApprovalRecord[];
+    const [rows] = await pool.execute(query);
+    let data = rows as SoftwareApprovalRecord[];
 
-  data = data
-    .filter((item) => !shouldExcludeSoftware(item.software))
-    .map((item) => {
-      const normalizedSoftware = normalizeSoftwareName(item.software);
-      const aprobado = isSoftwareApprovedForLocation(
-        normalizedSoftware,
-        item.ubicacion || "",
-      );
-      return {
-        ...item,
-        software: normalizedSoftware,
-        aprobado: aprobado,
-      };
-    });
+    data = data
+      .filter((item) => !shouldExcludeSoftware(item.software))
+      .map((item) => {
+        const normalizedSoftware = normalizeSoftwareName(item.software);
+        const aprobado = isSoftwareApprovedForLocationDb(
+          normalizedSoftware,
+          item.ubicacion || "",
+        );
+        return {
+          ...item,
+          software: normalizedSoftware,
+          aprobado: aprobado,
+        };
+      });
 
-  data = Array.from(
-    data
-      .reduce((map, item) => {
-        const key = `${item.computadora}-${item.software}`;
-        if (!map.has(key)) {
-          map.set(key, item);
-        }
-        return map;
-      }, new Map<string, SoftwareApprovalRecord>())
-      .values(),
-  );
+    data = Array.from(
+      data
+        .reduce((map, item) => {
+          const key = `${item.computadora}-${item.software}`;
+          if (!map.has(key)) {
+            map.set(key, item);
+          }
+          return map;
+        }, new Map<string, SoftwareApprovalRecord>())
+        .values(),
+    );
 
-  const total = data.length;
+    const total = data.length;
 
-  return NextResponse.json({ total });
+    return NextResponse.json({ total });
+  } catch (error) {
+    return NextResponse.json({ error: String(error) }, { status: 500 });
+  }
 }

@@ -1,19 +1,74 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+
+  --color-background: var(--background);
+  --color-background2: var(--background2);
+  --color-background3: var(--background3);
+  --color-background4: var(--background4);
+  --color-background5: var(--background5);
+  --color-background6: var(--background6);
+  --color-texto: var(--texto);
+  --color-texto2: var(--texto2);
+  --color-textohover: var(--textohover);
+  --color-orange: #ef8225;
+  --color-blue: #30a0f0;
+  --color-water: #33a7fd;
+  --color-red: #f00;
+  --color-red2: #dd1e1eff;
+  --color-redlogo: #ed292e;
+  --color-green: #54c42d;
+  --color-lightgrey: #8c8c8c;
+  --color-grey: #1f1f1f;
+  --color-black: #131313;
+  --color-header-bg: var(--header-bg);
+  --color-texto-header: var(--texto-header);
+}
+
 :root {
+  --header-bg: #a4deff;
+  --texto-header: #111;
   --background: #ffffff;
+  --background2: #ededed;
+  --background3: #e0e0e0;
+  --background4: #d8d8d8;
+  --background5: #d3d3d3;
+  --background6: #cecece;
   --foreground: #171717;
+  --texto: #222;
+  --texto2: #555;
+  --textohover: #333;
+  --textodesac: #929292ff;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+.dark {
+  --header-bg: #111;
+  --texto-header: #fafafa;
+  --background: #131313;
+  --background2: #222;
+  --background3: #292929;
+  --background4: #333;
+  --background5: #393939;
+  --background6: #3e3e3e;
+  --foreground: #ededed;
+  --texto: #eee;
+  --texto2: #aaa;
+  --textohover: #ddd;
+  --textodesac: #585858;
+}
+
+@layer base {
+  * {
+    box-sizing: border-box;
   }
-}
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  body {
+    background-color: var(--background);
+    color: var(--texto);
+    font-family: var(--font-geist-sans, Arial, sans-serif);
+  }
 }

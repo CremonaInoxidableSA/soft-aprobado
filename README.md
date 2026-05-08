@@ -67,7 +67,7 @@ soft-aprobado/
 
 - `/` - Página de inicio (redirige a /inventario)
 - `/inventario` - Inventario general de software
-- `/aprobado` - Control de software aprobado/desaprobado
+- `/` - Control de software aprobado/desaprobado
 
 ## Scripts Disponibles
 

@@ -72,23 +72,25 @@ export default function ExportDropdown<RowType>({
     <div className="relative inline-block text-left">
       <button
         onClick={() => setOpen((o) => !o)}
-        className="px-3 py-1 text-sm bg-white border border-gray-300 rounded-md hover:bg-gray-50 flex items-center space-x-2"
+        className="px-3 py-1 text-sm bg-background2 border border-background4 rounded-md text-texto hover:bg-background3 flex items-center space-x-2 transition-colors"
       >
-        <i className="fas fa-file-excel text-green-600 mr-2"></i>
+        <i className="fas fa-file-excel text-green mr-2"></i>
         <span>Exportar</span>
-        <i className="fas fa-chevron-down ml-2 text-gray-400"></i>
+        <i className="fas fa-chevron-down ml-2 text-texto2"></i>
       </button>
 
       {open && (
-        <div className="origin-top-right absolute right-0 mt-2 w-64 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-50 p-3">
-          <div className="mb-2 text-sm font-medium">Columnas a exportar</div>
+        <div className="origin-top-right absolute right-0 mt-2 w-64 rounded-md shadow-lg bg-background2 border border-background4 z-50 p-3">
+          <div className="mb-2 text-sm font-medium text-texto">
+            Columnas a exportar
+          </div>
           <div className="max-h-32 overflow-auto mb-3">
             {columns.map((col) => {
               const key = String(col.key);
               return (
                 <label
                   key={key}
-                  className="flex items-center space-x-2 text-sm mb-1"
+                  className="flex items-center space-x-2 text-sm mb-1 text-texto"
                 >
                   <input
                     type="checkbox"
@@ -102,7 +104,7 @@ export default function ExportDropdown<RowType>({
           </div>
 
           <div className="mb-3">
-            <div className="text-sm font-medium mb-1">Filas</div>
+            <div className="text-sm font-medium mb-1 text-texto">Filas</div>
             <label className="flex items-center space-x-2">
               <input
                 type="radio"
@@ -110,7 +112,9 @@ export default function ExportDropdown<RowType>({
                 checked={exportScope === "page"}
                 onChange={() => setExportScope("page")}
               />
-              <span className="text-sm">Filas mostradas (página actual)</span>
+              <span className="text-sm text-texto">
+                Filas mostradas (página actual)
+              </span>
             </label>
             <label className="flex items-center space-x-2">
               <input
@@ -120,20 +124,22 @@ export default function ExportDropdown<RowType>({
                 onChange={() => setExportScope("all")}
                 disabled={!allRows}
               />
-              <span className="text-sm">Todas las filas filtradas</span>
+              <span className="text-sm text-texto">
+                Todas las filas filtradas
+              </span>
             </label>
           </div>
 
           <div className="flex justify-end space-x-2">
             <button
               onClick={() => setOpen(false)}
-              className="px-3 py-1 text-sm bg-gray-100 rounded-md"
+              className="px-3 py-1 text-sm bg-background3 text-texto rounded-md hover:bg-background4 transition-colors"
             >
               Cancelar
             </button>
             <button
               onClick={handleExport}
-              className="px-3 py-1 text-sm bg-green-600 text-white rounded-md"
+              className="px-3 py-1 text-sm bg-green/20 text-green border border-green/40 rounded-md hover:bg-green/30 transition-colors"
             >
               Exportar a Excel
             </button>

@@ -55,6 +55,7 @@ export interface ApprovedSoftwareHierarchy {
   general: string[];
   areas: Map<string, string[]>;
   puestos: Map<string, { area: string; software: string[] }>;
+  computadoras: Map<string, string[]>;
 }
 
 export interface LocationData {

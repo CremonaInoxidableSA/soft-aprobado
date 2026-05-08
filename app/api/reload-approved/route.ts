@@ -1,11 +1,12 @@
 import { NextResponse } from "next/server";
-import { reloadApprovedSoftware } from "@/lib/excel-utils";
+import { reloadDbCache } from "@/lib/db-autorizado";
 
 export async function POST() {
-  const result = await reloadApprovedSoftware();
+  const result = await reloadDbCache();
 
   return NextResponse.json({
-    message: "Lista de software aprobado recargada exitosamente",
-    ...result,
+    message: "Lista de software aprobado recargada desde la base de datos",
+    success: true,
+    count: result.count,
   });
 }

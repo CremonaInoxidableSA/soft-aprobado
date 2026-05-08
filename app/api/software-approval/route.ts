@@ -4,19 +4,24 @@ import { SoftwareApprovalRecord } from "@/lib/types";
 import {
   shouldExcludeSoftware,
   normalizeSoftwareName,
-  isSoftwareApprovedForLocation,
 } from "@/lib/excel-utils";
+import {
+  ensureDbCacheLoaded,
+  isSoftwareApprovedForLocationDb,
+} from "@/lib/db-autorizado";
 
 export async function GET(request: Request) {
-  const { searchParams } = new URL(request.url);
-  const search = searchParams.get("search") || "";
-  const equipo = searchParams.get("equipo") || "all";
-  const estado = searchParams.get("estado") || "all";
-  const software = searchParams.get("software") || "all";
-  const ubicacion = searchParams.get("ubicacion") || "all";
-  const pool = await getDbPool();
+  try {
+    const { searchParams } = new URL(request.url);
+    const search = searchParams.get("search") || "";
+    const equipo = searchParams.get("equipo") || "all";
+    const estado = searchParams.get("estado") || "all";
+    const software = searchParams.get("software") || "all";
+    const ubicacion = searchParams.get("ubicacion") || "all";
+    const pool = await getDbPool();
+    await ensureDbCacheLoaded();
 
-  let query = `
+    let query = `
     SELECT 
       c.name AS equipo,
       c.name AS computadora,
@@ -40,67 +45,71 @@ export async function GET(request: Request) {
         AND (sc.name IS NULL OR sc.name NOT IN ('system', 'update', 'system_update'))
   `;
 
-  const params: string[] = [];
+    const params: string[] = [];
 
-  if (equipo !== "all") {
-    query += " AND c.name = ?";
-    params.push(equipo);
-  }
-  if (ubicacion !== "all") {
-    query += " AND l.completename = ?";
-    params.push(ubicacion);
-  }
+    if (equipo !== "all") {
+      query += " AND c.name = ?";
+      params.push(equipo);
+    }
+    if (ubicacion !== "all") {
+      query += " AND l.completename = ?";
+      params.push(ubicacion);
+    }
 
-  query += " ORDER BY l.completename, c.name, s.name";
+    query += " ORDER BY l.completename, c.name, s.name";
 
-  const [rows] = await pool.execute(query, params);
-  let data = rows as SoftwareApprovalRecord[];
+    const [rows] = await pool.execute(query, params);
+    let data = rows as SoftwareApprovalRecord[];
 
-  data = data
-    .filter((item) => !shouldExcludeSoftware(item.software))
-    .map((item) => {
-      const normalizedSoftware = normalizeSoftwareName(item.software);
-      const aprobado = isSoftwareApprovedForLocation(
-        normalizedSoftware,
-        item.ubicacion || "",
+    data = data
+      .filter((item) => !shouldExcludeSoftware(item.software))
+      .map((item) => {
+        const normalizedSoftware = normalizeSoftwareName(item.software);
+        const aprobado = isSoftwareApprovedForLocationDb(
+          normalizedSoftware,
+          item.ubicacion || "",
+          item.equipo || item.computadora || undefined,
+        );
+        return {
+          ...item,
+          software: normalizedSoftware,
+          aprobado: aprobado,
+        };
+      });
+
+    if (software !== "all") {
+      data = data.filter((item) => item.software === software);
+    }
+
+    if (search) {
+      const searchLower = search.toLowerCase();
+      data = data.filter(
+        (item) =>
+          item.computadora.toLowerCase().includes(searchLower) ||
+          item.software.toLowerCase().includes(searchLower),
       );
-      return {
-        ...item,
-        software: normalizedSoftware,
-        aprobado: aprobado,
-      };
-    });
+    }
 
-  if (software !== "all") {
-    data = data.filter((item) => item.software === software);
-  }
-
-  if (search) {
-    const searchLower = search.toLowerCase();
-    data = data.filter(
-      (item) =>
-        item.computadora.toLowerCase().includes(searchLower) ||
-        item.software.toLowerCase().includes(searchLower),
+    data = Array.from(
+      data
+        .reduce((map, item) => {
+          const key = `${item.computadora}-${item.software}`;
+          if (!map.has(key)) {
+            map.set(key, item);
+          }
+          return map;
+        }, new Map<string, SoftwareApprovalRecord>())
+        .values(),
     );
+
+    if (estado === "aprobado") {
+      data = data.filter((item) => item.aprobado);
+    } else if (estado === "desaprobado") {
+      data = data.filter((item) => !item.aprobado);
+    }
+
+    return NextResponse.json(data);
+  } catch (error) {
+    return NextResponse.json({ error: String(error) }, { status: 500 });
   }
-
-  data = Array.from(
-    data
-      .reduce((map, item) => {
-        const key = `${item.computadora}-${item.software}`;
-        if (!map.has(key)) {
-          map.set(key, item);
-        }
-        return map;
-      }, new Map<string, SoftwareApprovalRecord>())
-      .values(),
-  );
-
-  if (estado === "aprobado") {
-    data = data.filter((item) => item.aprobado);
-  } else if (estado === "desaprobado") {
-    data = data.filter((item) => !item.aprobado);
-  }
-
-  return NextResponse.json(data);
 }

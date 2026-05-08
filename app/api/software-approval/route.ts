@@ -52,8 +52,9 @@ export async function GET(request: Request) {
       params.push(equipo);
     }
     if (ubicacion !== "all") {
-      query += " AND l.completename = ?";
-      params.push(ubicacion);
+      // Incluye la ubicación exacta y todos sus hijos (GLPI usa " > " como separador de jerarquía)
+      query += " AND (l.completename = ? OR l.completename LIKE ?)";
+      params.push(ubicacion, `${ubicacion} > %`);
     }
 
     query += " ORDER BY l.completename, c.name, s.name";

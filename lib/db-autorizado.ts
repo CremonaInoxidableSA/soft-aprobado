@@ -93,6 +93,23 @@ function normalizeForComparison(text: string): string {
     .trim();
 }
 
+/**
+ * Dado un completename de GLPI (ej. "Planta > Mantenimiento > Turno A"),
+ * devuelve todos los caminos ancestros de más específico a más general:
+ * ["Planta > Mantenimiento > Turno A", "Planta > Mantenimiento", "Planta"]
+ */
+function getAncestorPaths(completename: string): string[] {
+  const parts = completename
+    .split(" > ")
+    .map((s) => s.trim())
+    .filter(Boolean);
+  const paths: string[] = [];
+  for (let i = parts.length; i > 0; i--) {
+    paths.push(parts.slice(0, i).join(" > "));
+  }
+  return paths; // más específico primero
+}
+
 function parseLocation(ubicacion: string): { area: string; puesto: string } {
   if (!ubicacion) return { area: "", puesto: "" };
 
@@ -154,7 +171,8 @@ function matchesSoftware(approved: string, input: string): boolean {
 
 /**
  * Determina si un software está autorizado para una ubicación/equipo dados,
- * aplicando la jerarquía: PC → General → Área → Puesto.
+ * aplicando la jerarquía: PC → General → Área/Puesto (descendiendo por los
+ * ancestros del completename de GLPI para herencia padre→hijo).
  *
  * @param softwareName  Nombre del software (se normaliza internamente)
  * @param ubicacion     Valor de glpi_locations.completename del equipo
@@ -177,18 +195,50 @@ export function isSoftwareApprovedForLocationDb(
   // 2. Aprobado a nivel general
   if (dbCache.general.some(check)) return true;
 
-  // 3. Aprobado por área o puesto según la ubicación
+  if (!ubicacion) return false;
+
+  // 3. Recorre todos los ancestros del completename de GLPI (más específico primero)
+  //    "Planta > Mantenimiento > Sub" → ["Planta > Mantenimiento > Sub", "Planta > Mantenimiento", "Planta"]
+  //    Así la aprobación en un padre se hereda por todos sus hijos.
+  const ancestors = getAncestorPaths(ubicacion);
+
+  for (const path of ancestors) {
+    const pathNorm = normalizeForComparison(path);
+
+    // 3a. Buscar coincidencia exacta con puestos almacenados (área|||puesto)
+    for (const [puestoKey, puestoData] of dbCache.puestos.entries()) {
+      const [area, puesto] = puestoKey.split("|||");
+      // El path puede ser "Área > Puesto" o solo el segmento final "Puesto"
+      const combinedNorm = normalizeForComparison(`${area} > ${puesto}`);
+      const puestoOnlyNorm = normalizeForComparison(puesto);
+      if (pathNorm === combinedNorm || pathNorm === puestoOnlyNorm) {
+        if (puestoData.software.some(check)) return true;
+        // Heredar también los del área padre del puesto
+        if (dbCache.areas.get(area)?.some(check)) return true;
+      }
+    }
+
+    // 3b. Buscar coincidencia exacta con áreas almacenadas
+    for (const [area, softwareList] of dbCache.areas.entries()) {
+      if (pathNorm === normalizeForComparison(area)) {
+        if (softwareList.some(check)) return true;
+      }
+    }
+  }
+
+  // 4. Fallback: matching por substring (compatibilidad con datos existentes
+  //    que no usan el separador " > " de GLPI)
   const { area, puesto } = parseLocation(ubicacion);
-  if (!area) return false;
-
-  if (dbCache.areas.get(area)?.some(check)) return true;
-  if (!puesto) return false;
-
-  const puestoKey = `${area}|||${puesto}`;
-  const puestoData = dbCache.puestos.get(puestoKey);
-  if (puestoData) {
-    if (puestoData.software.some(check)) return true;
-    if (dbCache.areas.get(puestoData.area)?.some(check)) return true;
+  if (area) {
+    if (dbCache.areas.get(area)?.some(check)) return true;
+    if (puesto) {
+      const puestoKey = `${area}|||${puesto}`;
+      const puestoData = dbCache.puestos.get(puestoKey);
+      if (puestoData) {
+        if (puestoData.software.some(check)) return true;
+        if (dbCache.areas.get(puestoData.area)?.some(check)) return true;
+      }
+    }
   }
 
   return false;

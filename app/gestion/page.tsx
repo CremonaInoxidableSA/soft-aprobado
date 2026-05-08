@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import LoadingSpinner from "@/components/LoadingSpinner";
 
 // ─── Tipos ───────────────────────────────────────────────────────────────────
@@ -135,6 +135,17 @@ export default function GestionPage() {
   const [collapsed, setCollapsed] = useState<Set<string>>(new Set());
   const [confirmDelete, setConfirmDelete] = useState<number | null>(null);
 
+  // Backup (export / import)
+  const [exporting, setExporting] = useState(false);
+  const [importing, setImporting] = useState(false);
+  const [importMsg, setImportMsg] = useState<{
+    type: "ok" | "err";
+    text: string;
+  } | null>(null);
+  const [confirmImport, setConfirmImport] = useState(false);
+  const [pendingImportFile, setPendingImportFile] = useState<File | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
   // ── Carga de datos ──────────────────────────────────────────────────────────
 
   const loadRecords = useCallback(async () => {
@@ -255,6 +266,77 @@ export default function GestionPage() {
     await loadRecords();
   };
 
+  // ── Exportar backup ─────────────────────────────────────────────────────────
+
+  const handleExport = async () => {
+    setExporting(true);
+    try {
+      const res = await fetch("/api/autorizado/export");
+      const json = await res.json();
+      const blob = new Blob([JSON.stringify(json, null, 2)], {
+        type: "application/json",
+      });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      const date = new Date().toISOString().slice(0, 10);
+      a.download = `software-autorizado-backup-${date}.json`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    } finally {
+      setExporting(false);
+    }
+  };
+
+  // ── Importar backup ─────────────────────────────────────────────────────────
+
+  const handleImportFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setPendingImportFile(file);
+    setConfirmImport(true);
+    e.target.value = "";
+  };
+
+  const handleImportConfirm = async () => {
+    if (!pendingImportFile) return;
+    setConfirmImport(false);
+    setImporting(true);
+    setImportMsg(null);
+    try {
+      const text = await pendingImportFile.text();
+      const json = JSON.parse(text);
+      const res = await fetch("/api/autorizado/import", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(json),
+      });
+      const result = await res.json();
+      if (res.ok) {
+        setImportMsg({
+          type: "ok",
+          text: `Importación exitosa: ${result.imported} registros restaurados.`,
+        });
+        await loadRecords();
+      } else {
+        setImportMsg({
+          type: "err",
+          text: result.error ?? "Error al importar.",
+        });
+      }
+    } catch (e) {
+      setImportMsg({
+        type: "err",
+        text: `Error al leer el archivo: ${String(e)}`,
+      });
+    } finally {
+      setImporting(false);
+      setPendingImportFile(null);
+    }
+  };
+
   // ── Render ──────────────────────────────────────────────────────────────────
 
   if (loading)
@@ -286,6 +368,52 @@ export default function GestionPage() {
           <p className="text-texto2 text-sm mt-1">
             {records.length} registros en la base de datos
           </p>
+        </div>
+
+        {/* ── Backup ──────────────────────────────────────────────────── */}
+        <div className="flex flex-wrap items-center gap-3 mb-6">
+          <button
+            onClick={handleExport}
+            disabled={exporting}
+            className="flex items-center gap-2 px-4 py-2 rounded border border-background4 bg-background2 text-texto2 hover:text-texto hover:bg-background3 text-sm transition-colors disabled:opacity-50"
+          >
+            <i className="fas fa-download text-xs" />
+            {exporting ? "Exportando..." : "Exportar backup"}
+          </button>
+
+          <button
+            onClick={() => fileInputRef.current?.click()}
+            disabled={importing}
+            className="flex items-center gap-2 px-4 py-2 rounded border border-background4 bg-background2 text-texto2 hover:text-texto hover:bg-background3 text-sm transition-colors disabled:opacity-50"
+          >
+            <i className="fas fa-upload text-xs" />
+            {importing ? "Importando..." : "Importar backup"}
+          </button>
+
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept=".json"
+            className="hidden"
+            onChange={handleImportFileSelect}
+          />
+
+          {importMsg && (
+            <p
+              className={`text-sm ${
+                importMsg.type === "ok" ? "text-green" : "text-red2"
+              }`}
+            >
+              <i
+                className={`fas ${
+                  importMsg.type === "ok"
+                    ? "fa-check-circle"
+                    : "fa-exclamation-circle"
+                } mr-1`}
+              />
+              {importMsg.text}
+            </p>
+          )}
         </div>
 
         {/* ── Formulario de agregar ─────────────────────────────────────── */}
@@ -630,6 +758,46 @@ export default function GestionPage() {
           )}
         </div>
       </div>
+
+      {/* ── Modal de confirmación de importación ──────────────────────── */}
+      {confirmImport && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <div className="bg-background2 border border-background4 rounded-lg p-6 max-w-md w-full mx-4 shadow-xl">
+            <h3 className="font-semibold text-texto mb-2 flex items-center gap-2">
+              <i className="fas fa-exclamation-triangle text-orange" />
+              Confirmar importación
+            </h3>
+            <p className="text-sm text-texto2 mb-4">
+              Esta acción{" "}
+              <strong className="text-texto">
+                reemplazará todos los registros actuales
+              </strong>{" "}
+              con los del archivo{" "}
+              <code className="bg-background3 px-1 rounded text-xs">
+                {pendingImportFile?.name}
+              </code>
+              . Esta operación no se puede deshacer.
+            </p>
+            <div className="flex justify-end gap-3">
+              <button
+                onClick={() => {
+                  setConfirmImport(false);
+                  setPendingImportFile(null);
+                }}
+                className="px-4 py-2 rounded border border-background4 text-texto2 hover:text-texto text-sm transition-colors"
+              >
+                Cancelar
+              </button>
+              <button
+                onClick={handleImportConfirm}
+                className="px-4 py-2 rounded bg-red2/20 text-red2 border border-red2/40 hover:bg-red2/30 text-sm transition-colors"
+              >
+                Importar y reemplazar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </main>
   );
 }

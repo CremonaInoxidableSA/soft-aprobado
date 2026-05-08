@@ -34,6 +34,12 @@ export const HeaderPrincipal = () => {
       <div className="flex flex-row w-[30%] justify-end items-center">
         <ul className="flex flex-row w-full h-full gap-7 justify-end">
           <Link
+            href="http://192.168.20.198:3001"
+            className="opacity-70 hover:opacity-100 transition-opacity"
+          >
+            Control Apps
+          </Link>
+          <Link
             href="https://creminox.com"
             rel="noopener noreferrer"
             target="_blank"

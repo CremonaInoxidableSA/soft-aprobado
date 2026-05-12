@@ -15,6 +15,7 @@ let approvedSoftwareHierarchy: ApprovedSoftwareHierarchy = {
   general: [],
   areas: new Map(),
   puestos: new Map(),
+  computadoras: new Map(),
 };
 let lastExcelRead: Date | null = null;
 
@@ -61,6 +62,7 @@ export async function readApprovedSoftware(): Promise<string[]> {
       general: [],
       areas: new Map(),
       puestos: new Map(),
+      computadoras: new Map(),
     };
     lastExcelRead = null;
     return [];
@@ -91,6 +93,7 @@ export async function readApprovedSoftware(): Promise<string[]> {
     general: [],
     areas: new Map(),
     puestos: new Map(),
+    computadoras: new Map(),
   };
 
   const allSoftware = new Set<string>();

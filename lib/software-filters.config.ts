@@ -157,35 +157,101 @@ export const SOFTWARE_FILTERS: SoftwareFiltersConfig = {
 
   // Normalizar
   normalize: [
-    { pattern: /^(Adobe Acrobat)(?:\s+DC|\s+\d+|\s+Reader|\s+Pro|\s+\(64-bits\))?.*$/i, replacement: "$1" },
-    { pattern: /^AutoCAD(?:\s+Mechanical)?(?:\s+2022)?$/i, replacement: "AutoDesk AutoCAD 2022" },
-    { pattern: /^AutoCAD(?:\s+Mechanical)?(?:\s+2020)?$/i, replacement: "AutoDesk AutoCAD 2020" },
+    {
+      pattern:
+        /^(Adobe Acrobat)(?:\s+DC|\s+\d+|\s+Reader|\s+Pro|\s+\(64-bits\))?.*$/i,
+      replacement: "$1",
+    },
+    {
+      pattern: /^AutoCAD(?:\s+Mechanical)?(?:\s+2022)?$/i,
+      replacement: "AutoDesk AutoCAD 2022",
+    },
+    {
+      pattern: /^AutoCAD(?:\s+Mechanical)?(?:\s+2020)?$/i,
+      replacement: "AutoDesk AutoCAD 2020",
+    },
     { pattern: /^Clipchamp(\.Clipchamp)?$/i, replacement: "Clipchamp" },
     { pattern: /^(draw\.io)\s+.*$/i, replacement: "$1" },
     { pattern: /^(Foxit PDF)\s+.*$/i, replacement: "$1" },
     { pattern: /^(Kaspersky)\s+.*$/i, replacement: "$1" },
-    { pattern: /^(Autodesk DWG TrueView 2025)\s+.*$/i, replacement: "AutoDesk DWG TrueView 2025" },
+    {
+      pattern: /^(Autodesk DWG TrueView 2025)\s+.*$/i,
+      replacement: "AutoDesk DWG TrueView 2025",
+    },
 
-    { pattern: /^(Microsoft 365 Apps for business)(?:\s+-\s+\w+-\w+)?$/i, replacement: "Microsoft Office 365 (Licencia)" },
-    { pattern: /^(Aplicaciones de Microsoft 365 para negocios)(?:\s+-\s+\w+-\w+)?$/i, replacement: "Microsoft Office 365 (Licencia)" },
+    {
+      pattern: /^(Microsoft 365 Apps for business)(?:\s+-\s+\w+-\w+)?$/i,
+      replacement: "Microsoft Office 365 (Licencia)",
+    },
+    {
+      pattern:
+        /^(Aplicaciones de Microsoft 365 para negocios)(?:\s+-\s+\w+-\w+)?$/i,
+      replacement: "Microsoft Office 365 (Licencia)",
+    },
 
-    { pattern: /^(Microsoft Office Profesional Plus 2019)(?:\s+-\s+\w+-\w+(?:\.\w+)?)?$/i, replacement: "Microsoft Office 2019" },
-    { pattern: /^(Microsoft Office Professional Plus 2019)(?:\s+-\s+\w+-\w+(?:\.\w+)?)?$/i, replacement: "Microsoft Office 2019" },
+    {
+      pattern:
+        /^(Microsoft Office Profesional Plus 2019)(?:\s+-\s+\w+-\w+(?:\.\w+)?)?$/i,
+      replacement: "Microsoft Office 2019",
+    },
+    {
+      pattern:
+        /^(Microsoft Office Professional Plus 2019)(?:\s+-\s+\w+-\w+(?:\.\w+)?)?$/i,
+      replacement: "Microsoft Office 2019",
+    },
 
-    { pattern: /^(Microsoft 365 - es-es)(?:\s+-\s+\w+-\w+)?$/i, replacement: "Microsoft Office 2016" },
-    { pattern: /^(Microsoft PowerPoint 2016)(?:\s+-\s+\w+-\w+)?$/i, replacement: "Microsoft Office 2016" },
-    { pattern: /^(Microsoft Office Profesional Plus 2016)(?:\s+-\s+\w+-\w+(?:\.\w+)?)?$/i, replacement: "Microsoft Office 2016" },
-    { pattern: /^(Microsoft Office Professional Plus 2016)(?:\s+-\s+\w+-\w+(?:\.\w+)?)?$/i, replacement: "Microsoft Office 2016" },
+    {
+      pattern: /^(Microsoft 365 - es-es)(?:\s+-\s+\w+-\w+)?$/i,
+      replacement: "Microsoft Office 2016",
+    },
+    {
+      pattern: /^(Microsoft PowerPoint 2016)(?:\s+-\s+\w+-\w+)?$/i,
+      replacement: "Microsoft Office 2016",
+    },
+    {
+      pattern:
+        /^(Microsoft Office Profesional Plus 2016)(?:\s+-\s+\w+-\w+(?:\.\w+)?)?$/i,
+      replacement: "Microsoft Office 2016",
+    },
+    {
+      pattern:
+        /^(Microsoft Office Professional Plus 2016)(?:\s+-\s+\w+-\w+(?:\.\w+)?)?$/i,
+      replacement: "Microsoft Office 2016",
+    },
 
-    { pattern: /^(Microsoft PowerPoint LTSC)(?:\s+-\s+\w+-\w+(?:\.\w+)?)?$/i, replacement: "Microsoft Office 2016" },
-    { pattern: /^(Microsoft Office LTSC Professional Plus 2021 - en-us)(?:\s+-\s+\w+-\w+)?$/i, replacement: "Microsoft Office 2021" },
+    {
+      pattern: /^(Microsoft PowerPoint LTSC)(?:\s+-\s+\w+-\w+(?:\.\w+)?)?$/i,
+      replacement: "Microsoft Office 2016",
+    },
+    {
+      pattern:
+        /^(Microsoft Office LTSC Professional Plus 2021 - en-us)(?:\s+-\s+\w+-\w+)?$/i,
+      replacement: "Microsoft Office 2021",
+    },
 
-    { pattern: /^(Microsoft Project Profesional 2016)(?:\s+-\s+\w+-\w+)?$/i, replacement: "Project 2016" },
-    { pattern: /^(Microsoft Project Professional 2016)(?:\s+-\s+\w+-\w+)?$/i, replacement: "Project 2016" },
+    {
+      pattern: /^(Microsoft Project Profesional 2016)(?:\s+-\s+\w+-\w+)?$/i,
+      replacement: "Project 2016",
+    },
+    {
+      pattern: /^(Microsoft Project Professional 2016)(?:\s+-\s+\w+-\w+)?$/i,
+      replacement: "Project 2016",
+    },
 
-    {pattern:/^(Microsoft Project Professional 2021)(?:\s+-\s+\w+-\w+(?:\.\w+)?)?$/i,replacement: "Project 2021"},
-    {pattern:/^(Microsoft Project Profesional 2021)(?:\s+-\s+\w+-\w+(?:\.\w+)?)?$/i, replacement: "Project 2021"},
-    {pattern: /^(Microsoft Project)(?:\s+-\s+\w+-\w+)?$/i, replacement: "Project 2021"},
+    {
+      pattern:
+        /^(Microsoft Project Professional 2021)(?:\s+-\s+\w+-\w+(?:\.\w+)?)?$/i,
+      replacement: "Project 2021",
+    },
+    {
+      pattern:
+        /^(Microsoft Project Profesional 2021)(?:\s+-\s+\w+-\w+(?:\.\w+)?)?$/i,
+      replacement: "Project 2021",
+    },
+    {
+      pattern: /^(Microsoft Project)(?:\s+-\s+\w+-\w+)?$/i,
+      replacement: "Project 2021",
+    },
 
     { pattern: /^(Python)\s+.*$/i, replacement: "$1" },
     { pattern: /^(PowerToys)\s+.*$/i, replacement: "$1" },
@@ -237,13 +303,22 @@ export const SOFTWARE_FILTERS: SoftwareFiltersConfig = {
     { pattern: /.*Revo Uninstaller.*/i, replacement: "Revo Uninstaller" },
     { pattern: /.*MediBang Paint Pro.*/i, replacement: "MediBang Paint Pro" },
     { pattern: /.*Advanced IP Scanner.*/i, replacement: "Advanced IP Scanner" },
-    { pattern: /.*Silicon Laboratories.*/i, replacement: "Silicon Laboratories" },
+    {
+      pattern: /.*Silicon Laboratories.*/i,
+      replacement: "Silicon Laboratories",
+    },
 
     { pattern: /.*CrystalDiskInfo.*/i, replacement: "CrystalDiskInfo" },
     { pattern: /.*CrystalDiskMark.*/i, replacement: "CrystalDiskMark" },
 
-    { pattern: /.*Totally Integrated Automation Portal V16.*/i, replacement: "Siemens TIA Portal V16" },
-    { pattern: /.*Totally Integrated Automation Portal V17.*/i, replacement: "Siemens TIA Portal V17" },
+    {
+      pattern: /.*Totally Integrated Automation Portal V16.*/i,
+      replacement: "Siemens TIA Portal V16",
+    },
+    {
+      pattern: /.*Totally Integrated Automation Portal V17.*/i,
+      replacement: "Siemens TIA Portal V17",
+    },
 
     { pattern: /.*SIMATIC.*16.*/i, replacement: "SIMATIC V16" },
     { pattern: /.*SIMATIC.*17.*/i, replacement: "SIMATIC V17" },
